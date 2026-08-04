@@ -28,7 +28,7 @@ export default function CareerClubsEditor({
   function update(next: ClubStint[]) {
     onChange(serializeClubStints(next, true));
   }
-  function updateRow(i: number, patch: Partial<CareerClub>) {
+  function updateRow(i: number, patch: Partial<ClubStint>) {
     const next = rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r));
     update(next);
   }
@@ -50,8 +50,8 @@ export default function CareerClubsEditor({
               <input
                 type="text"
                 placeholder="vd: Real Madrid"
-                value={row.club}
-                onChange={(e) => updateRow(i, { club: e.target.value })}
+                value={row.name}
+                onChange={(e) => updateRow(i, { name: e.target.value })}
               />
             </div>
             <div className="repeater-field">
