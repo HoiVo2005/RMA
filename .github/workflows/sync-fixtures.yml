@@ -1,0 +1,15 @@
+name: Đồng bộ lịch thi đấu Real Madrid
+
+on:
+  schedule:
+    - cron: '*/30 * * * *' # mỗi 30 phút (giờ UTC)
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gọi API đồng bộ lịch thi đấu
+        run: |
+          curl -sf -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/sync-fixtures"

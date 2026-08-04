@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+
+# next
+.next/
+out/
+
+# env
+.env
+.env.local
+.env.production
+.env.development
+
+# logs
+*.log
+
+# build
+dist/
+build/
+
+# cache
+.cache/
+
+# typescript
+*.tsbuildinfo
+
+# temp
+tmp-*.js
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

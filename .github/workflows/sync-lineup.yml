@@ -1,0 +1,15 @@
+name: Đồng bộ đội hình ra sân (Highlightly)
+
+on:
+  schedule:
+    - cron: '*/10 * * * *' # mỗi 10 phút (giờ UTC) — đúng tần suất khuyến nghị của Highlightly
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gọi API đồng bộ đội hình
+        run: |
+          curl -sf -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            "${{ secrets.APP_URL }}/api/cron/sync-lineup"
