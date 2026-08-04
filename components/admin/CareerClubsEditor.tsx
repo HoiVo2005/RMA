@@ -1,16 +1,32 @@
-'use client';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
-import { parseCareerClubs, serializeCareerClubs, type CareerClub } from '@/lib/career';
+"use client";
+import { Plus, Trash2, GripVertical } from "lucide-react";
+import {
+  parseClubStints,
+  serializeClubStints,
+  type ClubStint,
+} from "@/lib/career";
 
-const EMPTY: CareerClub = { club: '', fromYear: '', toYear: '' };
+const EMPTY: ClubStint = {
+  name: "",
+  fromYear: "",
+  toYear: "",
+  apps: "",
+  goals: "",
+};
 
-export default function CareerClubsEditor({ value, onChange }: { value: string; onChange: (v: string) => void }) {
-  const list = parseCareerClubs(value);
+export default function CareerClubsEditor({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  const list = parseClubStints(value);
   // Nếu cột đang trống hoàn toàn, luôn hiện sẵn 1 dòng để nhập cho dễ.
   const rows = list.length > 0 ? list : [EMPTY];
 
-  function update(next: CareerClub[]) {
-    onChange(serializeCareerClubs(next));
+  function update(next: ClubStint[]) {
+    onChange(serializeClubStints(next, true));
   }
   function updateRow(i: number, patch: Partial<CareerClub>) {
     const next = rows.map((r, idx) => (idx === i ? { ...r, ...patch } : r));
@@ -57,7 +73,12 @@ export default function CareerClubsEditor({ value, onChange }: { value: string; 
               />
             </div>
           </div>
-          <button type="button" className="repeater-remove" onClick={() => removeRow(i)} title="Xoá dòng này">
+          <button
+            type="button"
+            className="repeater-remove"
+            onClick={() => removeRow(i)}
+            title="Xoá dòng này"
+          >
             <Trash2 size={14} />
           </button>
         </div>
