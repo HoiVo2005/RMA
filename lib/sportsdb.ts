@@ -376,10 +376,6 @@ const TEAM_NAME_OVERRIDES_RAW: Record<string, string> = {
   'u17 thổ nhĩ kì': 'Turkey U17',
   'u-17 thổ nhĩ kỳ': 'Turkey U17',
   'u-17 thổ nhĩ kì': 'Turkey U17',
-  'u15 anh': 'England U15',
-  'u16 anh': 'England U16',
-  'u-15 anh': 'England U15',
-  'u-16 anh': 'England U16',
 };
 
 const TEAM_NAME_OVERRIDES: Record<string, string> = Object.fromEntries(
