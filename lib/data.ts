@@ -82,14 +82,33 @@ export async function getArticle(idOrSlug: string): Promise<Article | null> {
   if (idOrSlug.startsWith('demo-')) return demoArticles.find((a) => a.id === idOrSlug) || null;
   const c = client();
   if (!c) return null;
+
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idOrSlug);
+  if (isUuid) {
+    const { data } = await c
+      .from('articles')
+      .select('*')
+      .eq('id', idOrSlug)
+      .eq('status', 'published')
+      .maybeSingle();
+    return data as Article | null;
+  }
+
   const { data } = await c
     .from('articles')
     .select('*')
-    .eq(isUuid ? 'id' : 'slug', idOrSlug)
+    .eq('slug', idOrSlug)
     .eq('status', 'published')
     .maybeSingle();
-  return data as Article | null;
+  if (data) return data as Article;
+
+  // Fallback for older articles with no stored `slug` field.
+  const { data: legacy } = await c
+    .from('articles')
+    .select('*')
+    .is('slug', null)
+    .eq('status', 'published');
+  return (legacy || []).find((a) => slugify(a.translated_title) === idOrSlug) || null;
 }
 
 export async function getRelatedArticles(a: Article, limit = 4): Promise<Article[]> {

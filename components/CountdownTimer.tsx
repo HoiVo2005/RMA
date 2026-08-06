@@ -1,5 +1,5 @@
-'use client';
-import { useEffect, useState } from 'react';
+"use client";
+import { useEffect, useState } from "react";
 
 function diff(target: number) {
   const d = Math.max(0, target - Date.now());
@@ -14,14 +14,26 @@ function diff(target: number) {
 
 export default function CountdownTimer({ target }: { target: string }) {
   const targetMs = new Date(target).getTime();
-  const [t, setT] = useState(() => diff(targetMs));
+  const [t, setT] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+    done: false,
+  });
 
   useEffect(() => {
+    setT(diff(targetMs));
     const id = setInterval(() => setT(diff(targetMs)), 1000);
     return () => clearInterval(id);
   }, [targetMs]);
 
-  if (t.done) return <div className="countdown countdown-live">⚡ Trận đấu sắp/đang diễn ra</div>;
+  if (t.done)
+    return (
+      <div className="countdown countdown-live">
+        ⚡ Trận đấu sắp/đang diễn ra
+      </div>
+    );
 
   return (
     <div className="countdown">
@@ -30,15 +42,15 @@ export default function CountdownTimer({ target }: { target: string }) {
         <span>ngày</span>
       </div>
       <div className="countdown-cell">
-        <b>{String(t.hours).padStart(2, '0')}</b>
+        <b>{String(t.hours).padStart(2, "0")}</b>
         <span>giờ</span>
       </div>
       <div className="countdown-cell">
-        <b>{String(t.minutes).padStart(2, '0')}</b>
+        <b>{String(t.minutes).padStart(2, "0")}</b>
         <span>phút</span>
       </div>
       <div className="countdown-cell">
-        <b>{String(t.seconds).padStart(2, '0')}</b>
+        <b>{String(t.seconds).padStart(2, "0")}</b>
         <span>giây</span>
       </div>
     </div>

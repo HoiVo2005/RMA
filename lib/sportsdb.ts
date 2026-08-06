@@ -67,6 +67,19 @@ function isCoachingStaff(position: string | null | undefined, status: string | n
   return false;
 }
 
+async function mapWithConcurrency<T, R>(items: T[], mapper: (item: T) => Promise<R>, concurrency = 5): Promise<R[]> {
+  const results: R[] = [] as any;
+  let nextIndex = 0;
+  const workers = Array.from({ length: Math.min(concurrency, items.length) }, async () => {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex++;
+      results[currentIndex] = await mapper(items[currentIndex]);
+    }
+  });
+  await Promise.all(workers);
+  return results;
+}
+
 export type SyncResult = { fetched: number; upserted: number; eventsFilled?: number; apiFootballConfigured?: boolean; errors?: string[] };
 
 /** Đồng bộ toàn bộ danh sách cầu thủ hiện tại từ TheSportsDB vào bảng players. */
@@ -77,36 +90,44 @@ export async function syncSquadFromTheSportsDB(): Promise<SyncResult> {
   const players: any[] = json.player || [];
 
   const db = createSupabaseAdmin();
-  let upserted = 0;
   const errors: string[] = [];
 
-  for (const p of players) {
-    if (isCoachingStaff(p.strPosition, p.strStatus)) continue;
-    const name = p.strPlayer;
-    if (!name) continue;
+  const payloads = players
+    .filter((p) => !isCoachingStaff(p.strPosition, p.strStatus))
+    .map((p) => {
+      const name = p.strPlayer;
+      if (!name) return null;
+      return {
+        name,
+        slug: slugify(name),
+        shirt_number: p.strNumber ? parseInt(p.strNumber, 10) || null : null,
+        position: mapPosition(p.strPosition),
+        nationality: toVietnameseCountry(p.strNationality),
+        image_url: p.strCutout || p.strThumb || p.strRender || null,
+        date_of_birth: p.dateBorn || null,
+        is_active: true,
+      };
+    })
+    .filter((p): p is { name: string; slug: string; shirt_number: number | null; position: string; nationality: string | null; image_url: string | null; date_of_birth: string | null; is_active: boolean } => Boolean(p));
 
-    const payload = {
-      name,
-      slug: slugify(name),
-      shirt_number: p.strNumber ? parseInt(p.strNumber, 10) || null : null,
-      position: mapPosition(p.strPosition),
-      nationality: toVietnameseCountry(p.strNationality),
-      image_url: p.strCutout || p.strThumb || p.strRender || null,
-      date_of_birth: p.dateBorn || null,
-      is_active: true,
-    };
-
-    if (!payload.image_url) {
-      try {
-        payload.image_url = await fetchPlayerImageUrl(name);
-      } catch {
-        // ignore fetch errors and keep any existing fallback if absent
-      }
+  const missingImagePayloads = payloads.filter((p) => !p.image_url);
+  const images = await mapWithConcurrency(missingImagePayloads, async (payload) => {
+    try {
+      return await fetchPlayerImageUrl(payload.name);
+    } catch {
+      return null;
     }
+  }, 3);
+  images.forEach((image, idx) => {
+    if (image) missingImagePayloads[idx].image_url = image;
+  });
 
-    const { error } = await db.from('players').upsert(payload, { onConflict: 'slug' });
-    if (!error) upserted++;
-    else if (errors.length < 3) errors.push(error.message);
+  let upserted = 0;
+  const { error } = await db.from('players').upsert(payloads, { onConflict: 'slug' });
+  if (!error) {
+    upserted = payloads.length;
+  } else {
+    errors.push(error.message);
   }
 
   return { fetched: players.length, upserted, errors: errors.length ? errors : undefined };
@@ -204,6 +225,8 @@ export async function syncFixturesFromTheSportsDB(): Promise<SyncResult> {
   let timelineFetches = 0;
   let eventsFilled = 0;
 
+  const payloads: Record<string, any>[] = [];
+
   for (const ev of events) {
     if (!ev.strHomeTeam || !ev.strAwayTeam || !ev.dateEvent) continue;
     const status = toStatus(ev);
@@ -235,9 +258,16 @@ export async function syncFixturesFromTheSportsDB(): Promise<SyncResult> {
       }
     }
 
-    const { error } = await db.from('fixtures').upsert(payload, { onConflict: 'external_id' });
-    if (!error) upserted++;
-    else if (errors.length < 3) errors.push(error.message);
+    payloads.push(payload);
+  }
+
+  if (payloads.length > 0) {
+    const { error } = await db.from('fixtures').upsert(payloads, { onConflict: 'external_id' });
+    if (!error) {
+      upserted = payloads.length;
+    } else if (errors.length < 3) {
+      errors.push(error.message);
+    }
   }
 
   return {
@@ -286,12 +316,30 @@ const TEAM_NAME_OVERRIDES_RAW: Record<string, string> = {
   'pháp u20': 'France U20',
   'pháp u21': 'France U21',
   'pháp u23': 'France U23',
+  'anh u15': 'England U15',
+  'anh u16': 'England U16',
   'anh u17': 'England U17',
   'anh u18': 'England U18',
   'anh u19': 'England U19',
   'anh u20': 'England U20',
   'anh u21': 'England U21',
   'anh u23': 'England U23',
+  'u15 anh': 'England U15',
+  'u16 anh': 'England U16',
+  'u17 anh': 'England U17',
+  'u18 anh': 'England U18',
+  'u19 anh': 'England U19',
+  'u20 anh': 'England U20',
+  'u21 anh': 'England U21',
+  'u23 anh': 'England U23',
+  'u-15 anh': 'England U15',
+  'u-16 anh': 'England U16',
+  'u-17 anh': 'England U17',
+  'u-18 anh': 'England U18',
+  'u-19 anh': 'England U19',
+  'u-20 anh': 'England U20',
+  'u-21 anh': 'England U21',
+  'u-23 anh': 'England U23',
 
   // Tên CLB và biệt danh thường gặp
   'monaco ii': 'AS Monaco',
@@ -301,8 +349,37 @@ const TEAM_NAME_OVERRIDES_RAW: Record<string, string> = {
   'psg': 'Paris Saint-Germain',
   'real madrid cf': 'Real Madrid',
   'real madrid': 'Real Madrid',
+  'real madrid castilla': 'Real Madrid',
+  'real madrid b': 'Real Madrid',
   'atletico madrid': 'Atlético Madrid',
   'athletico madrid': 'Atlético Madrid',
+  'atletico madrid b': 'Atlético Madrid',
+  'levante b': 'Levante',
+  'villarreal b': 'Villarreal',
+  'benfica b': 'Benfica',
+  'barcelona b': 'Barcelona',
+  'juventus next gen': 'Juventus',
+  'inter milan': 'Inter Milan',
+  'internazionale': 'Inter Milan',
+  'psv': 'PSV Eindhoven',
+  'psv eindhoven': 'PSV Eindhoven',
+  'heerenveen': 'SC Heerenveen',
+  'sparta rotterdam': 'Sparta Rotterdam',
+  'spartaan': 'Sparta Rotterdam',
+  'smitshoek': 'SV Smitshoek',
+  'bvv barendrecht': 'BVV Barendrecht',
+  'thổ nhĩ kỳ': 'Turkey',
+  'thổ nhĩ kì': 'Turkey',
+  'thổ nhĩ kỳ u17': 'Turkey U17',
+  'thổ nhĩ kì u17': 'Turkey U17',
+  'u17 thổ nhĩ kỳ': 'Turkey U17',
+  'u17 thổ nhĩ kì': 'Turkey U17',
+  'u-17 thổ nhĩ kỳ': 'Turkey U17',
+  'u-17 thổ nhĩ kì': 'Turkey U17',
+  'u15 anh': 'England U15',
+  'u16 anh': 'England U16',
+  'u-15 anh': 'England U15',
+  'u-16 anh': 'England U16',
 };
 
 const TEAM_NAME_OVERRIDES: Record<string, string> = Object.fromEntries(
@@ -546,17 +623,31 @@ export async function fillMissingFixtureLogos(): Promise<FillLogosResult> {
     if (!r.home_logo_url) teamNames.add(r.home_team);
     if (!r.away_logo_url) teamNames.add(r.away_team);
   }
-
-  const badgeByTeam = new Map<string, string | null>();
-  for (const name of Array.from(teamNames)) {
-    badgeByTeam.set(name, await getTeamBadgeUrl(name));
+  // Build a set of canonical team names (normalized) so we only lookup each
+  // logical team once even if it appears with multiple name variants in DB.
+  const normalizedSet = new Set<string>();
+  for (const r of rows || []) {
+    if (!r.home_logo_url && r.home_team) normalizedSet.add(normalizeTeamNameForBadge(r.home_team));
+    if (!r.away_logo_url && r.away_team) normalizedSet.add(normalizeTeamNameForBadge(r.away_team));
   }
+
+  const normalizedArr = Array.from(normalizedSet).filter(Boolean) as string[];
+  const badgeEntries = await mapWithConcurrency(
+    normalizedArr,
+    async (canonical) => [canonical, await getTeamBadgeUrl(canonical)] as const,
+    5,
+  );
+  const badgeByCanonical = new Map<string, string | null>(badgeEntries);
 
   let rowsUpdated = 0;
   for (const r of rows || []) {
     const patch: Record<string, string> = {};
-    if (!r.home_logo_url && badgeByTeam.get(r.home_team)) patch.home_logo_url = badgeByTeam.get(r.home_team)!;
-    if (!r.away_logo_url && badgeByTeam.get(r.away_team)) patch.away_logo_url = badgeByTeam.get(r.away_team)!;
+    const homeKey = r.home_team ? normalizeTeamNameForBadge(r.home_team) : '';
+    const awayKey = r.away_team ? normalizeTeamNameForBadge(r.away_team) : '';
+    const homeBadge = !r.home_logo_url ? badgeByCanonical.get(homeKey) : null;
+    const awayBadge = !r.away_logo_url ? badgeByCanonical.get(awayKey) : null;
+    if (homeBadge) patch.home_logo_url = homeBadge;
+    if (awayBadge) patch.away_logo_url = awayBadge;
     if (Object.keys(patch).length) {
       const { error } = await db.from('fixtures').update(patch).eq('id', r.id);
       if (!error) rowsUpdated++;
@@ -564,8 +655,8 @@ export async function fillMissingFixtureLogos(): Promise<FillLogosResult> {
   }
 
   return {
-    teamsChecked: teamNames.size,
-    teamsFound: Array.from(badgeByTeam.values()).filter(Boolean).length,
+    teamsChecked: normalizedArr.length,
+    teamsFound: Array.from(badgeByCanonical.values()).filter(Boolean).length,
     rowsUpdated,
   };
 }

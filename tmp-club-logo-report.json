@@ -1,0 +1,350 @@
+[
+  {
+    "canonical": "real madrid",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/vwvwrw1473502969.png",
+    "savedPath": "/icons/real-madrid.png"
+  },
+  {
+    "canonical": "leganes",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/tm0adr1616443898.png",
+    "savedPath": "/icons/leganes.png"
+  },
+  {
+    "canonical": "fiorentina",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/hc8nhu1656098030.png",
+    "savedPath": "/icons/fiorentina.png"
+  },
+  {
+    "canonical": "deportivo de a coruna",
+    "badgeUrl": "https://www.thesportsdb.com/images/media/team/badge/62bvwv1783013156.png",
+    "savedPath": "/icons/deportivo-de-a-coruna.png"
+  },
+  {
+    "canonical": "espanyol",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/867nzz1681703222.png",
+    "savedPath": "/icons/espanyol.png"
+  },
+  {
+    "canonical": "elche",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/e4vaw51655594332.png",
+    "savedPath": "/icons/elche.png"
+  },
+  {
+    "canonical": "atletico de madrid",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/0ulh3q1719984315.png",
+    "savedPath": "/icons/atletico-de-madrid.png"
+  },
+  {
+    "canonical": "villarreal",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/vrypqy1473503073.png",
+    "savedPath": "/icons/villarreal.png"
+  },
+  {
+    "canonical": "sevilla",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/vpsqqx1473502977.png",
+    "savedPath": "/icons/sevilla.png"
+  },
+  {
+    "canonical": "barcelona",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/wq9sir1639406443.png",
+    "savedPath": "/icons/barcelona.png"
+  },
+  {
+    "canonical": "racing de santander",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/97kkiq1536575158.png",
+    "savedPath": "/icons/racing-de-santander.png"
+  },
+  {
+    "canonical": "valencia",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/dm8l6o1655594864.png",
+    "savedPath": "/icons/valencia.png"
+  },
+  {
+    "canonical": "celta de vigo",
+    "badgeUrl": "https://r2.thesportsdb.com/images/media/team/badge/9ysns21734456007.png",
+    "savedPath": "/icons/celta-de-vigo.png"
+  },
+  {
+    "canonical": "alaves",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "osasuna",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "athletic club",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "ferencvaros",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "real sociedad",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "rayo vallecano",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "deportivo",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "real betis",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "malaga",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "levante",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "getafe",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "bordeaux ii",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "bordeaux",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "monaco",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "santos",
+    "badgeUrl": "https://upload.wikimedia.org/wikipedia/commons/6/6f/Santos_Collage.png?utm_source=vi.wikipedia.org&utm_campaign=api&utm_content=original",
+    "savedPath": "/icons/santos.png"
+  },
+  {
+    "canonical": "real madrid castilla",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "manchester united",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "preston north end",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "granad",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "benfica",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "levante b",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "villarreal b",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "atletico madrid",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "manchester city",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "juventus next gen",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "juventus",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "roma",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "bournemouth",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "sochaux ii",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "sochaux",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "rb leipzig",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "liverpool",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "rsc internacional",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "real madrid b",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "genk",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "chelsea",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "river plate",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "monaco ii",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "paris saint-germain",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "birmingham city",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "borussia dortmund",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "fenerbahce",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "palmeiras",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "lyon",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "flamengo",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "benfica b",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "sparta rotterdam",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "heerenveen",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "psv",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "inter milan",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "vfb stuttgart ii",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "vfb stuttgart",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "sao paulo",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "porto",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "dnipro",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "zorya luhansk",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "valladolid",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "oviedo",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "as frenzi",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "leganes b",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "ac milan",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "le havre ii",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "le havre",
+    "badgeUrl": "https://upload.wikimedia.org/wikipedia/commons/8/81/Panorama_of_Le_Havre%2C_September_2019.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "savedPath": "/icons/le-havre.jpg"
+  },
+  {
+    "canonical": "rennes ii",
+    "badgeUrl": "https://upload.wikimedia.org/wikipedia/commons/4/49/Vue_sud-ouest_de_la_place_du_parlement_de_Bretagne%2C_Rennes%2C_France.jpg?utm_source=vi.wikipedia.org&utm_campaign=api&utm_content=original",
+    "savedPath": "/icons/rennes-ii.jpg"
+  },
+  {
+    "canonical": "rennes",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "penarol",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "deportivo la coruna",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "barcelona b",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "eibar",
+    "badgeUrl": null
+  },
+  {
+    "canonical": "brighton & hove albion",
+    "badgeUrl": null
+  }
+]

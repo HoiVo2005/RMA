@@ -1,17 +1,27 @@
-'use client';
-import { useState } from 'react';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
-import { parseClubStints, serializeClubStints, type ClubStint } from '@/lib/career';
+"use client";
+import { useEffect, useState } from "react";
+import { Plus, Trash2, GripVertical } from "lucide-react";
+import {
+  parseClubStints,
+  serializeClubStints,
+  type ClubStint,
+} from "@/lib/career";
 
-const EMPTY: ClubStint = { name: '', fromYear: '', toYear: '', apps: '', goals: '' };
+const EMPTY: ClubStint = {
+  name: "",
+  fromYear: "",
+  toYear: "",
+  apps: "",
+  goals: "",
+};
 
 export default function ClubStintsEditor({
   value,
   onChange,
-  nameLabel = 'Câu lạc bộ',
-  namePlaceholder = 'vd: Real Madrid',
+  nameLabel = "Câu lạc bộ",
+  namePlaceholder = "vd: Real Madrid",
   withStats = true,
-  addLabel = 'Thêm dòng',
+  addLabel = "Thêm dòng",
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -20,13 +30,23 @@ export default function ClubStintsEditor({
   withStats?: boolean;
   addLabel?: string;
 }) {
-  // Giữ danh sách dòng ở state riêng (chỉ khởi tạo 1 lần từ giá trị ban đầu) — KHÔNG tính lại từ
-  // chuỗi đã lưu mỗi lần render, vì chuỗi đã lưu luôn lọc bỏ dòng trống nên dòng vừa "Thêm" sẽ biến
-  // mất ngay lập tức nếu tính lại theo cách đó.
+  // Giữ danh sách dòng ở state riêng để không làm mất dòng vừa thêm khi render lại.
   const [rows, setRows] = useState<ClubStint[]>(() => {
     const parsed = parseClubStints(value);
     return parsed.length > 0 ? parsed : [{ ...EMPTY }];
   });
+
+  useEffect(() => {
+    const parsed = parseClubStints(value);
+    const normalizedValue = serializeClubStints(
+      parsed.length > 0 ? parsed : [{ ...EMPTY }],
+      withStats,
+    );
+    const currentValue = serializeClubStints(rows, withStats);
+    if (normalizedValue !== currentValue) {
+      setRows(parsed.length > 0 ? parsed : [{ ...EMPTY }]);
+    }
+  }, [value, withStats]);
 
   function update(next: ClubStint[]) {
     setRows(next);
@@ -99,7 +119,12 @@ export default function ClubStintsEditor({
               </>
             )}
           </div>
-          <button type="button" className="repeater-remove" onClick={() => removeRow(i)} title="Xoá dòng này">
+          <button
+            type="button"
+            className="repeater-remove"
+            onClick={() => removeRow(i)}
+            title="Xoá dòng này"
+          >
             <Trash2 size={14} />
           </button>
         </div>
