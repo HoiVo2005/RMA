@@ -1,7 +1,7 @@
 // Ánh xạ tên quốc tịch (tiếng Việt hoặc tiếng Anh, admin có thể nhập cả 2 kiểu)
 // sang mã quốc gia ISO 3166-1 alpha-2 để hiển thị lá cờ (dùng flagcdn.com).
 // "Anh" dùng mã gb-eng (cờ thánh George) — đúng thông lệ bóng đá thay vì cờ Anh Quốc chung.
-const FLAG_CODES: Record<string, string> = {
+const FLAG_CODES_RAW: Record<string, string> = {
   // Tiếng Việt
   'tây ban nha': 'es',
   'pháp': 'fr',
@@ -83,11 +83,42 @@ const FLAG_CODES: Record<string, string> = {
   'usa': 'us',
   'ivory coast': 'ci',
   'cote d\'ivoire': 'ci',
+  'czechia': 'cz',
+  'czech republic': 'cz',
+  'republic of korea': 'kr',
+  'korea republic': 'kr',
+  'bosnia and herzegovina': 'ba',
+  'democratic republic of the congo': 'cd',
+  'congo dr': 'cd',
+  'costa rica': 'cr',
+  'romania': 'ro',
+  'albania': 'al',
+  'slovenia': 'si',
+  'greece': 'gr',
+  'serbia and montenegro': 'cs',
 };
+
+function normalizeFlagKey(value: string): string {
+  return value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+const FLAG_CODES: Record<string, string> = Object.fromEntries(
+  Object.entries(FLAG_CODES_RAW).flatMap(([key, value]) => [
+    [key.trim().toLowerCase(), value],
+    [normalizeFlagKey(key), value],
+  ])
+);
 
 export function flagCode(nationality?: string | null): string | null {
   if (!nationality) return null;
-  return FLAG_CODES[nationality.trim().toLowerCase()] || null;
+  const key = normalizeFlagKey(nationality);
+  return FLAG_CODES[key] || null;
 }
 
 export function flagUrl(nationality?: string | null, width: 20 | 24 | 40 | 80 = 24): string | null {

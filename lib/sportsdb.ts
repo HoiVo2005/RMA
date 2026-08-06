@@ -281,6 +281,18 @@ export async function syncFixturesFromTheSportsDB(): Promise<SyncResult> {
 
 const TEAM_NAME_OVERRIDES_RAW: Record<string, string> = {
   // Các đội tuyển quốc gia tiếng Việt / tên rút gọn
+  'đội tuyển việt nam': 'Vietnam',
+  'đtqg việt nam': 'Vietnam',
+  'đội tuyển anh': 'England',
+  'đtqg anh': 'England',
+  'đội tuyển pháp': 'France',
+  'đtqg pháp': 'France',
+  'đội tuyển đức': 'Germany',
+  'đtqg đức': 'Germany',
+  'đội tuyển tây ban nha': 'Spain',
+  'đtqg tây ban nha': 'Spain',
+  'đội tuyển bỉ': 'Belgium',
+  'đtqg bỉ': 'Belgium',
   'bỉ': 'Belgium',
   'pháp': 'France',
   'anh': 'England',
@@ -348,18 +360,29 @@ const TEAM_NAME_OVERRIDES_RAW: Record<string, string> = {
   'paris saint germain': 'Paris Saint-Germain',
   'psg': 'Paris Saint-Germain',
   'real madrid cf': 'Real Madrid',
+  'real madrid club de futbol': 'Real Madrid',
   'real madrid': 'Real Madrid',
   'real madrid castilla': 'Real Madrid',
   'real madrid b': 'Real Madrid',
   'atletico madrid': 'Atlético Madrid',
   'athletico madrid': 'Atlético Madrid',
+  'atletico de madrid': 'Atlético Madrid',
   'atletico madrid b': 'Atlético Madrid',
+  'atletico madrid cf': 'Atlético Madrid',
+  'fc barcelona': 'Barcelona',
+  'barcelona cf': 'Barcelona',
+  'bayern munich': 'Bayern Munich',
+  'fc bayern munich': 'Bayern Munich',
+  'manchester city': 'Manchester City',
+  'manchester united': 'Manchester United',
+  'juventus fc': 'Juventus',
+  'ac milan': 'AC Milan',
+  'inter milan': 'Inter Milan',
   'levante b': 'Levante',
   'villarreal b': 'Villarreal',
   'benfica b': 'Benfica',
   'barcelona b': 'Barcelona',
   'juventus next gen': 'Juventus',
-  'inter milan': 'Inter Milan',
   'internazionale': 'Inter Milan',
   'psv': 'PSV Eindhoven',
   'psv eindhoven': 'PSV Eindhoven',
@@ -420,7 +443,7 @@ function translateVietnameseTeamName(teamName: string): string {
   }
 
   country = country
-    .replace(/\b(doi tuyen quoc gia|doi tuyen tre|doi tuyen|quoc gia|nuoc|cua)\b/g, '')
+    .replace(/\b(doi tuyen quoc gia|doi tuyen tre|doi tuyen|dtqg|quoc gia|nuoc|cua)\b/g, '')
     .replace(/\s+/g, ' ')
     .trim();
 
@@ -431,16 +454,27 @@ function translateVietnameseTeamName(teamName: string): string {
   return teamName.trim();
 }
 
+function isLikelyNationalTeamName(teamName: string): boolean {
+  const normalized = normalizeStringKey(teamName);
+  return /\b(?:doi tuyen|dtqg|quoc gia|national team)\b/.test(normalized)
+    || /\b(?:viet nam|anh|phap|duc|tay ban nha|bi|ha lan|y|bo dao nha|thoi nhi ky|maroc|brazil|argentina|uruguay|colombia|japan|korea|mexico|canada|usa|united states)\b/.test(normalized);
+}
+
 function normalizeTeamNameForBadge(teamName: string): string {
   let normalized = translateVietnameseTeamName(teamName);
   if (!normalized) return normalized;
 
   normalized = normalized.replace(/\(.*?\)/g, '').replace(/mượn/gi, '').trim();
   normalized = normalized.replace(/u[-\s]?(\d+)/gi, 'U$1');
-  normalized = normalized.replace(/\s+/g, ' ').trim();
 
-  const key = normalizeStringKey(normalized);
-  return TEAM_NAME_OVERRIDES[key] || normalized;
+  if (isLikelyNationalTeamName(teamName)) {
+    normalized = normalized.replace(/\s+/g, ' ').trim();
+    const key = normalizeStringKey(normalized);
+    return TEAM_NAME_OVERRIDES[key] || normalized;
+  }
+
+  normalized = normalized.replace(/\s+/g, ' ').trim();
+  return normalized;
 }
 
 function buildTeamBadgeSearchCandidates(teamName: string): string[] {
