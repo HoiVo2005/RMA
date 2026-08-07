@@ -17,8 +17,8 @@ export function categorizeHonor(title: string): HonorCategory {
   return 'other';
 }
 
-function looksLikeUrl(value: string): boolean {
-  const v = value.trim();
+function looksLikeUrl(value: string | undefined): boolean {
+  const v = value?.trim() || '';
   return !!v && /^(https?:\/\/|\/|data:image\/)/i.test(v);
 }
 
