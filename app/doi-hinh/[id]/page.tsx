@@ -74,8 +74,16 @@ export default async function PlayerProfilePage({
   );
   const teamBadgeByName = new Map<string, string | null>(badgeEntries);
 
+  const manualLogoByName = new Map<string, string | null>();
+  for (const stint of [...youthClubs, ...seniorClubs, ...nationalTeam]) {
+    const trimmed = stint.name.trim();
+    if (trimmed && stint.logo_url?.trim()) {
+      manualLogoByName.set(trimmed, stint.logo_url.trim());
+    }
+  }
+
   function renderClubCell(name: string) {
-    const logo = teamBadgeByName.get(name);
+    const logo = manualLogoByName.get(name) || teamBadgeByName.get(name);
     return (
       <div className="career-club-cell">
         {logo ? (

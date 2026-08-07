@@ -1,6 +1,6 @@
-import Page from '@/components/Page';
-import ArticleCard from '@/components/ArticleCard';
-import { ArticleBadges, timeAgo } from '@/components/Badges';
+import Page from "@/components/Page";
+import ArticleCard from "@/components/ArticleCard";
+import { ArticleBadges, timeAgo } from "@/components/Badges";
 import {
   getArticles,
   getSources,
@@ -10,27 +10,50 @@ import {
   getTrendingArticles,
   getFixturePrediction,
   getLiveFixture,
-} from '@/lib/data';
-import { getSiteSettings } from '@/lib/site-settings';
-import { articleHref } from '@/lib/article-url';
-import LineupSection from '@/components/LineupSection';
-import CountdownTimer from '@/components/CountdownTimer';
-import PredictionWidget from '@/components/PredictionWidget';
-import LiveMatchCenter from '@/components/LiveMatchCenter';
-import Link from 'next/link';
-import { ArrowRight, Newspaper, Radio, Trophy, ListOrdered, Repeat2, Users, CalendarDays, Flame, Eye } from 'lucide-react';
+  getFixtures,
+} from "@/lib/data";
+import { getSiteSettings } from "@/lib/site-settings";
+import { articleHref } from "@/lib/article-url";
+import LineupSection from "@/components/LineupSection";
+import CountdownTimer from "@/components/CountdownTimer";
+import PredictionWidget from "@/components/PredictionWidget";
+import LiveMatchCenter from "@/components/LiveMatchCenter";
+import Link from "next/link";
+import {
+  ArrowRight,
+  Newspaper,
+  Radio,
+  Trophy,
+  ListOrdered,
+  Repeat2,
+  Users,
+  CalendarDays,
+  Flame,
+  Eye,
+  Sparkles,
+} from "lucide-react";
 
 export const revalidate = 120;
 
 const quickNav = [
-  { href: '/tin-moi', label: 'Tin mới', icon: Newspaper },
-  { href: '/chuyen-nhuong', label: 'Chuyển nhượng', icon: Repeat2 },
-  { href: '/lich-thi-dau', label: 'Lịch thi đấu', icon: CalendarDays },
-  { href: '/doi-hinh', label: 'Đội hình', icon: Users },
+  { href: "/tin-moi", label: "Tin mới", icon: Newspaper },
+  { href: "/chuyen-nhuong", label: "Chuyển nhượng", icon: Repeat2 },
+  { href: "/lich-thi-dau", label: "Lịch thi đấu", icon: CalendarDays },
+  { href: "/doi-hinh", label: "Đội hình", icon: Users },
 ];
 
 export default async function Home() {
-  const [articles, sources, nextFixture, lineup, standings, trending, liveFixture, settings] = await Promise.all([
+  const [
+    articles,
+    sources,
+    nextFixture,
+    lineup,
+    standings,
+    trending,
+    liveFixture,
+    settings,
+    fixtures,
+  ] = await Promise.all([
     getArticles({ limit: 13 }),
     getSources(),
     getUpcomingFixture(),
@@ -39,16 +62,60 @@ export default async function Home() {
     getTrendingArticles(5),
     getLiveFixture(),
     getSiteSettings(),
+    getFixtures(),
   ]);
-  const prediction = nextFixture ? await getFixturePrediction(nextFixture.id) : null;
+  const prediction = nextFixture
+    ? await getFixturePrediction(nextFixture.id)
+    : null;
 
   const hero = articles.find((a) => a.is_featured) || articles[0];
   const rest = articles.filter((a) => a.id !== hero?.id);
   const secondary = rest.slice(0, 3);
   const feed = rest.slice(3, 9);
   const quickReads = rest.slice(9, 13);
+  const topicHighlights = [
+    {
+      title: "Chuyển nhượng",
+      description:
+        "Tin nóng về thương vụ, mục tiêu mới và động thái của đội bóng",
+      href: "/chuyen-nhuong",
+      icon: Repeat2,
+    },
+    {
+      title: "Đội hình",
+      description: "Cập nhật sơ đồ, cầu thủ ra sân và nhân sự quan trọng",
+      href: "/doi-hinh",
+      icon: Users,
+    },
+    {
+      title: "Lịch thi đấu",
+      description:
+        "Xem lịch trận sắp tới, kết quả gần đây và thông tin giải đấu",
+      href: "/lich-thi-dau",
+      icon: CalendarDays,
+    },
+    {
+      title: "Tin mới",
+      description: "Tổng hợp các bài viết mới nhất cập nhật liên tục",
+      href: "/tin-moi",
+      icon: Newspaper,
+    },
+  ];
 
   const rmRank = standings?.table.find((r) => /real madrid/i.test(r.team));
+  const recentFixtures = fixtures
+    .filter(
+      (f) =>
+        f.home_score !== null &&
+        f.away_score !== null &&
+        f.home_score !== undefined &&
+        f.away_score !== undefined,
+    )
+    .sort(
+      (a, b) =>
+        new Date(b.match_time).getTime() - new Date(a.match_time).getTime(),
+    )
+    .slice(0, 3);
 
   return (
     <Page>
@@ -56,21 +123,31 @@ export default async function Home() {
         <section className="container" style={{ marginTop: 16 }}>
           {settings.bannerLink ? (
             <Link href={settings.bannerLink} className="home-promo-banner">
-              <img src={settings.bannerUrl} alt={settings.bannerTitle || 'Banner'} />
+              <img
+                src={settings.bannerUrl}
+                alt={settings.bannerTitle || "Banner"}
+              />
               {(settings.bannerTitle || settings.bannerSubtitle) && (
                 <div className="home-promo-banner-body">
                   {settings.bannerTitle && <b>{settings.bannerTitle}</b>}
-                  {settings.bannerSubtitle && <span>{settings.bannerSubtitle}</span>}
+                  {settings.bannerSubtitle && (
+                    <span>{settings.bannerSubtitle}</span>
+                  )}
                 </div>
               )}
             </Link>
           ) : (
             <div className="home-promo-banner">
-              <img src={settings.bannerUrl} alt={settings.bannerTitle || 'Banner'} />
+              <img
+                src={settings.bannerUrl}
+                alt={settings.bannerTitle || "Banner"}
+              />
               {(settings.bannerTitle || settings.bannerSubtitle) && (
                 <div className="home-promo-banner-body">
                   {settings.bannerTitle && <b>{settings.bannerTitle}</b>}
-                  {settings.bannerSubtitle && <span>{settings.bannerSubtitle}</span>}
+                  {settings.bannerSubtitle && (
+                    <span>{settings.bannerSubtitle}</span>
+                  )}
                 </div>
               )}
             </div>
@@ -83,7 +160,7 @@ export default async function Home() {
             <Link href={articleHref(hero)} className="hero hero-main">
               <div
                 className="hero-bg"
-                style={{ backgroundImage: `url(${hero.image_url || ''})` }}
+                style={{ backgroundImage: `url(${hero.image_url || ""})` }}
               />
               <div className="hero-inner">
                 <span className="hero-tag">
@@ -104,7 +181,11 @@ export default async function Home() {
             {secondary.length > 0 && (
               <div className="hero-secondary">
                 {secondary.map((a) => (
-                  <Link className="hero-secondary-item" href={articleHref(a)} key={a.id}>
+                  <Link
+                    className="hero-secondary-item"
+                    href={articleHref(a)}
+                    key={a.id}
+                  >
                     {a.image_url ? (
                       <img src={a.image_url} alt={a.translated_title} />
                     ) : (
@@ -143,10 +224,111 @@ export default async function Home() {
       </div>
 
       <div className="page-content">
+        {recentFixtures.length > 0 && (
+          <section className="recent-results-section">
+            <div className="section-title-row">
+              <h2 className="section-title">
+                <Trophy
+                  size={17}
+                  style={{ verticalAlign: -3, marginRight: 6 }}
+                />
+                Kết quả gần đây
+              </h2>
+              <Link href="/lich-thi-dau" className="section-more">
+                Xem lịch thi đấu <ArrowRight size={13} />
+              </Link>
+            </div>
+            <div className="recent-results-list">
+              {recentFixtures.map((f) => {
+                const isWin = (f.home_score ?? 0) > (f.away_score ?? 0);
+                const isDraw = (f.home_score ?? 0) === (f.away_score ?? 0);
+                return (
+                  <div className="recent-result-card" key={f.id}>
+                    <div className="recent-result-meta">
+                      <span>{f.competition}</span>
+                      <span>
+                        {new Date(f.match_time).toLocaleDateString("vi-VN", {
+                          day: "2-digit",
+                          month: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                    <div className="recent-result-teams">
+                      <div className="recent-result-team">
+                        {f.home_logo_url ? (
+                          <img src={f.home_logo_url} alt={f.home_team} />
+                        ) : (
+                          <span className="team-badge team-badge-fallback">
+                            {f.home_team.slice(0, 2)}
+                          </span>
+                        )}
+                        <span>{f.home_team}</span>
+                      </div>
+                      <div className="recent-result-score">
+                        {f.home_score}:{f.away_score}
+                      </div>
+                      <div className="recent-result-team">
+                        {f.away_logo_url ? (
+                          <img src={f.away_logo_url} alt={f.away_team} />
+                        ) : (
+                          <span className="team-badge team-badge-fallback">
+                            {f.away_team.slice(0, 2)}
+                          </span>
+                        )}
+                        <span>{f.away_team}</span>
+                      </div>
+                    </div>
+                    <div
+                      className={`recent-result-status ${isDraw ? "is-draw" : isWin ? "is-win" : "is-loss"}`}
+                    >
+                      {isDraw ? "Hòa" : isWin ? "Thắng" : "Thua"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        <section className="topic-highlights-section">
+          <div className="section-title-row">
+            <h2 className="section-title">
+              <Sparkles
+                size={17}
+                style={{ verticalAlign: -3, marginRight: 6 }}
+              />
+              Chủ đề nóng
+            </h2>
+          </div>
+          <div className="topic-highlights-grid">
+            {topicHighlights.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  href={item.href}
+                  className="topic-highlight-card"
+                  key={item.title}
+                >
+                  <div className="topic-highlight-icon">
+                    <Icon size={18} />
+                  </div>
+                  <div>
+                    <h3>{item.title}</h3>
+                    <p>{item.description}</p>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
         <section>
           <div className="section-title-row">
             <h2 className="section-title">
-              <Newspaper size={17} style={{ verticalAlign: -3, marginRight: 6 }} />
+              <Newspaper
+                size={17}
+                style={{ verticalAlign: -3, marginRight: 6 }}
+              />
               Tin mới nhất
             </h2>
             <Link href="/tin-moi" className="section-more">
@@ -157,7 +339,10 @@ export default async function Home() {
             {feed.length ? (
               feed.map((a) => <ArticleCard key={a.id} a={a} />)
             ) : (
-              <div className="empty">Chưa có bài viết nào. Vào trang quản trị để lấy tin tự động hoặc dán liên kết bài viết.</div>
+              <div className="empty">
+                Chưa có bài viết nào. Vào trang quản trị để lấy tin tự động hoặc
+                dán liên kết bài viết.
+              </div>
             )}
           </div>
         </section>
@@ -168,32 +353,45 @@ export default async function Home() {
               <h3>
                 <Trophy size={15} /> Trận đấu sắp tới
               </h3>
-              <span className="badge badge-category" style={{ marginBottom: 10, display: 'inline-flex' }}>
+              <span
+                className="badge badge-category"
+                style={{ marginBottom: 10, display: "inline-flex" }}
+              >
                 {nextFixture.competition}
               </span>
               <div className="next-fixture-teams">
                 <div className="next-fixture-team">
                   {nextFixture.home_logo_url ? (
-                    <img src={nextFixture.home_logo_url} alt={nextFixture.home_team} />
+                    <img
+                      src={nextFixture.home_logo_url}
+                      alt={nextFixture.home_team}
+                    />
                   ) : (
-                    <span className="team-badge team-badge-fallback">{nextFixture.home_team.slice(0, 2)}</span>
+                    <span className="team-badge team-badge-fallback">
+                      {nextFixture.home_team.slice(0, 2)}
+                    </span>
                   )}
                   <span>{nextFixture.home_team}</span>
                 </div>
                 <span className="next-fixture-vs">vs</span>
                 <div className="next-fixture-team">
                   {nextFixture.away_logo_url ? (
-                    <img src={nextFixture.away_logo_url} alt={nextFixture.away_team} />
+                    <img
+                      src={nextFixture.away_logo_url}
+                      alt={nextFixture.away_team}
+                    />
                   ) : (
-                    <span className="team-badge team-badge-fallback">{nextFixture.away_team.slice(0, 2)}</span>
+                    <span className="team-badge team-badge-fallback">
+                      {nextFixture.away_team.slice(0, 2)}
+                    </span>
                   )}
                   <span>{nextFixture.away_team}</span>
                 </div>
               </div>
               <CountdownTimer target={nextFixture.match_time} />
               <p className="next-fixture-time">
-                {new Date(nextFixture.match_time).toLocaleString('vi-VN')}
-                {nextFixture.stadium ? ` · ${nextFixture.stadium}` : ''}
+                {new Date(nextFixture.match_time).toLocaleString("vi-VN")}
+                {nextFixture.stadium ? ` · ${nextFixture.stadium}` : ""}
               </p>
               <Link href="/lich-thi-dau" className="widget-link">
                 Xem lịch thi đấu <ArrowRight size={12} />
@@ -216,12 +414,17 @@ export default async function Home() {
                 <Flame size={15} /> Đọc nhiều nhất
               </h3>
               {trending.map((a, i) => (
-                <Link className="trending-item" href={articleHref(a)} key={a.id}>
+                <Link
+                  className="trending-item"
+                  href={articleHref(a)}
+                  key={a.id}
+                >
                   <span className="trending-rank">{i + 1}</span>
                   <div className="trending-body">
                     <h4>{a.translated_title}</h4>
                     <span>
-                      <Eye size={11} /> {(a.view_count || 0).toLocaleString('vi-VN')} lượt xem
+                      <Eye size={11} />{" "}
+                      {(a.view_count || 0).toLocaleString("vi-VN")} lượt xem
                     </span>
                   </div>
                 </Link>
@@ -239,7 +442,8 @@ export default async function Home() {
                 <div>
                   <div className="mini-standing-team">Real Madrid</div>
                   <div className="mini-standing-sub">
-                    {rmRank.played} trận · {rmRank.points} điểm · HS {rmRank.gd > 0 ? `+${rmRank.gd}` : rmRank.gd}
+                    {rmRank.played} trận · {rmRank.points} điểm · HS{" "}
+                    {rmRank.gd > 0 ? `+${rmRank.gd}` : rmRank.gd}
                   </div>
                 </div>
               </div>
@@ -263,7 +467,11 @@ export default async function Home() {
             <div className="widget">
               <h3>Đọc nhanh</h3>
               {quickReads.map((a, i) => (
-                <Link className="quick-read-item" href={articleHref(a)} key={a.id}>
+                <Link
+                  className="quick-read-item"
+                  href={articleHref(a)}
+                  key={a.id}
+                >
                   <span className="quick-read-num">{i + 1}</span>
                   <span className="quick-read-title">{a.translated_title}</span>
                 </Link>

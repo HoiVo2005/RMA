@@ -13,6 +13,7 @@ const EMPTY: ClubStint = {
   toYear: "",
   apps: "",
   goals: "",
+  logo_url: "",
 };
 
 export default function ClubStintsEditor({
@@ -118,6 +119,18 @@ export default function ClubStintsEditor({
                 </div>
               </>
             )}
+            <div
+              className="repeater-field repeater-field-wide"
+              style={{ gridColumn: "1 / -1", marginTop: 8 }}
+            >
+              <span>Link icon / logo</span>
+              <input
+                type="url"
+                placeholder="https://... (bỏ trống thì tự tìm icon)"
+                value={row.logo_url || ""}
+                onChange={(e) => updateRow(i, { logo_url: e.target.value })}
+              />
+            </div>
           </div>
           <button
             type="button"

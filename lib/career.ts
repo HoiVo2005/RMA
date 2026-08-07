@@ -1,4 +1,4 @@
-export type ClubStint = { name: string; fromYear: string; toYear: string; apps: string; goals: string };
+export type ClubStint = { name: string; fromYear: string; toYear: string; apps: string; goals: string; logo_url?: string };
 export type Honor = { title: string; count: string; years: string; image_url?: string };
 
 export type HonorCategory = 'league' | 'continental' | 'cup' | 'international' | 'individual' | 'other';
@@ -17,8 +17,13 @@ export function categorizeHonor(title: string): HonorCategory {
   return 'other';
 }
 
+function looksLikeUrl(value: string): boolean {
+  const v = value.trim();
+  return !!v && /^(https?:\/\/|\/|data:image\/)/i.test(v);
+}
+
 /**
- * Phân tích chuỗi nhiều dòng dạng "Tên | Từ năm | Đến năm | Số trận | Số bàn" thành danh sách.
+ * Phân tích chuỗi nhiều dòng dạng "Tên | Từ năm | Đến năm | Số trận | Số bàn | Link icon/logo" thành danh sách.
  * Các phần "Số trận"/"Số bàn" có thể vắng mặt (dùng cho sự nghiệp trẻ, không theo dõi thống kê).
  */
 export function parseClubStints(raw: string | null | undefined): ClubStint[] {
@@ -29,12 +34,14 @@ export function parseClubStints(raw: string | null | undefined): ClubStint[] {
     .filter(Boolean)
     .map((line) => {
       const parts = line.split('|').map((p) => p.trim());
+      const logoUrl = [parts[5], parts[4], parts[3]].find((part) => looksLikeUrl(part)) || '';
       return {
         name: parts[0] || '',
         fromYear: parts[1] || '',
         toYear: parts[2] || '',
-        apps: parts[3] || '',
-        goals: parts[4] || '',
+        apps: parts[3] && !looksLikeUrl(parts[3]) ? parts[3] : '',
+        goals: parts[4] && !looksLikeUrl(parts[4]) ? parts[4] : '',
+        logo_url: logoUrl || undefined,
       };
     })
     .filter((c) => c.name);
@@ -48,8 +55,10 @@ export function serializeClubStints(list: ClubStint[], withStats: boolean): stri
   return list
     .filter((c) => c.name.trim())
     .map((c) => {
-      const base = `${c.name.trim()} | ${c.fromYear.trim()} | ${c.toYear.trim()}`;
-      return withStats ? `${base} | ${c.apps.trim()} | ${c.goals.trim()}` : base;
+      const parts = [`${c.name.trim()} | ${c.fromYear.trim()} | ${c.toYear.trim()}`];
+      if (withStats) parts.push(c.apps.trim(), c.goals.trim());
+      if (c.logo_url?.trim()) parts.push(c.logo_url.trim());
+      return parts.join(' | ');
     })
     .join('\n');
 }

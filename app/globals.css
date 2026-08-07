@@ -143,6 +143,206 @@ textarea {
   clear: both;
 }
 
+/* ===================== HOME FEATURE: TOPIC HIGHLIGHTS ===================== */
+.topic-highlights-section {
+  margin-bottom: 28px;
+}
+
+.topic-highlights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.topic-highlight-card {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 16px;
+  align-items: center;
+  min-height: 140px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: 0 18px 40px rgba(13, 55, 130, 0.08);
+  transition: transform 0.24s var(--ease-out), box-shadow 0.24s var(--ease-out);
+  text-decoration: none;
+}
+
+.topic-highlight-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 24px 56px rgba(13, 55, 130, 0.12);
+}
+
+.topic-highlight-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #1d4ed8, #7c3aed);
+  color: white;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.topic-highlight-card h3 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  line-height: 1.2;
+  color: var(--navy-900);
+}
+
+.topic-highlight-card p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--ink-600);
+  line-height: 1.6;
+  overflow: hidden;
+}
+
+@media (max-width: 700px) {
+  .topic-highlight-card {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .topic-highlight-icon {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 900px) {
+  .topic-highlights-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .topic-highlight-card {
+    grid-template-columns: 1fr;
+  }
+
+  .topic-highlight-icon {
+    width: 52px;
+    height: 52px;
+    margin-bottom: 10px;
+  }
+}
+
+@media (max-width: 600px) {
+  .topic-highlights-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===================== HOME FEATURE: RECENT RESULTS ===================== */
+.recent-results-section {
+  margin-bottom: 28px;
+}
+
+.recent-results-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.recent-result-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 170px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(239, 246, 255, 0.98));
+  border: 1px solid rgba(13, 55, 130, 0.08);
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(10px);
+}
+
+.recent-result-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--ink-500);
+  margin-bottom: 14px;
+}
+
+.recent-result-teams {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.recent-result-team {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink-900);
+  min-width: 0;
+}
+
+.recent-result-team span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-result-score {
+  justify-self: center;
+}
+
+@media (max-width: 760px) {
+  .recent-result-teams {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .recent-result-score {
+    justify-self: start;
+    font-size: 20px;
+  }
+}
+
+.recent-result-team img,
+.recent-result-team .team-badge {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.recent-result-score {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--navy-900);
+  padding: 0 12px;
+}
+
+.recent-result-status {
+  margin-top: auto;
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+@media (max-width: 900px) {
+  .recent-results-list {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ===================== SITE HEADER ===================== */
 .site-header-wrap {
   position: sticky;
