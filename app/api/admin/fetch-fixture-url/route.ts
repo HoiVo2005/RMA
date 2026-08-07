@@ -29,5 +29,7 @@ export async function POST(req: NextRequest) {
 
     if (existing) {
         return NextResponse.json({ data: { ...existing, ...payload } });
-        return NextResponse.json({ data: payload });
     }
+
+    return NextResponse.json({ data: payload });
+}
