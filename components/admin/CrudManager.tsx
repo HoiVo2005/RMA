@@ -9,6 +9,8 @@ import {
 import { adminJson } from "@/lib/admin-client";
 import { Plus, Pencil, Trash2, X, Search } from "lucide-react";
 
+export type FieldOption = string | { label: string; value: string };
+
 export type FieldConfig = {
   name: string;
   label: string;
@@ -22,7 +24,7 @@ export type FieldConfig = {
     | "url"
     | "image"
     | "custom";
-  options?: string[];
+  options?: FieldOption[];
   required?: boolean;
   placeholder?: string;
   half?: boolean; // render bên cạnh field tiếp theo (2 cột)
@@ -61,7 +63,7 @@ type Props = {
   defaultValues: Record<string, any>;
   searchKeys?: string[];
   extraToolbar?: React.ReactNode;
-  filters?: { key: string; label: string; options: string[] }[];
+  filters?: { key: string; label: string; options: FieldOption[] }[];
   onBeforeSave?: (values: Record<string, any>) => Record<string, any>;
   pageSize?: number;
 };
@@ -239,11 +241,15 @@ const CrudManager = forwardRef<CrudManagerHandle, Props>(function CrudManager(
               }
             >
               <option value="">{f.label}: Tất cả</option>
-              {f.options.map((o) => (
-                <option key={o} value={o}>
-                  {o}
-                </option>
-              ))}
+              {f.options.map((o) => {
+                const value = typeof o === "string" ? o : o.value;
+                const label = typeof o === "string" ? o : o.label;
+                return (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                );
+              })}
             </select>
           ))}
           {extraToolbar}
@@ -474,11 +480,15 @@ function renderOne(
           <option value="" disabled>
             Chọn...
           </option>
-          {f.options?.map((o) => (
-            <option key={o} value={o}>
-              {o}
-            </option>
-          ))}
+          {f.options?.map((o) => {
+            const value = typeof o === "string" ? o : o.value;
+            const label = typeof o === "string" ? o : o.label;
+            return (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            );
+          })}
         </select>
       ) : (
         <input

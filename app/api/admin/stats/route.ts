@@ -5,13 +5,14 @@ export async function GET(req: NextRequest) {
   const admin = await requireAdmin(req);
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const [articles, published, draft, sources, fixtures, players, lastLogs] = await Promise.all([
+  const [articles, published, draft, sources, fixtures, players, pendingComments, lastLogs] = await Promise.all([
     admin.from('articles').select('id', { count: 'exact', head: true }),
     admin.from('articles').select('id', { count: 'exact', head: true }).eq('status', 'published'),
     admin.from('articles').select('id', { count: 'exact', head: true }).eq('status', 'draft'),
     admin.from('news_sources').select('id', { count: 'exact', head: true }),
     admin.from('fixtures').select('id', { count: 'exact', head: true }),
     admin.from('players').select('id', { count: 'exact', head: true }),
+    admin.from('comments').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
     admin.from('cron_logs').select('*').order('started_at', { ascending: false }).limit(5),
   ]);
 
@@ -23,6 +24,7 @@ export async function GET(req: NextRequest) {
       sources: sources.count || 0,
       fixtures: fixtures.count || 0,
       players: players.count || 0,
+      pendingComments: pendingComments.count || 0,
       logs: lastLogs.data || [],
     },
   });

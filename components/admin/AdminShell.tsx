@@ -1,21 +1,41 @@
-'use client';
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
-import { createSupabaseBrowser } from '@/lib/supabase';
-import { LayoutDashboard, Newspaper, Radio, Trophy, Users, LogOut, ExternalLink, Shield, Settings, Menu, X } from 'lucide-react';
+"use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { createSupabaseBrowser } from "@/lib/supabase";
+import {
+  LayoutDashboard,
+  Newspaper,
+  Radio,
+  Trophy,
+  Users,
+  LogOut,
+  ExternalLink,
+  Shield,
+  Settings,
+  Menu,
+  X,
+  MessageCircle,
+} from "lucide-react";
 
 const links = [
-  { href: '/admin', label: 'Tổng quan', icon: LayoutDashboard },
-  { href: '/admin/bai-viet', label: 'Bài viết', icon: Newspaper },
-  { href: '/admin/nguon-tin', label: 'Nguồn tin', icon: Radio },
-  { href: '/admin/lich-thi-dau', label: 'Lịch thi đấu', icon: Trophy },
-  { href: '/admin/doi-hinh', label: 'Đội hình', icon: Users },
-  { href: '/admin/thong-tin-clb', label: 'Thông tin CLB', icon: Shield },
-  { href: '/admin/cai-dat', label: 'Cài đặt', icon: Settings },
+  { href: "/admin", label: "Tổng quan", icon: LayoutDashboard },
+  { href: "/admin/bai-viet", label: "Bài viết", icon: Newspaper },
+  { href: "/admin/binh-luan", label: "Bình luận", icon: MessageCircle },
+  { href: "/admin/nguon-tin", label: "Nguồn tin", icon: Radio },
+  { href: "/admin/lich-thi-dau", label: "Lịch thi đấu", icon: Trophy },
+  { href: "/admin/doi-hinh", label: "Đội hình", icon: Users },
+  { href: "/admin/thong-tin-clb", label: "Thông tin CLB", icon: Shield },
+  { href: "/admin/cai-dat", label: "Cài đặt", icon: Settings },
 ];
 
-export default function AdminShell({ children, title }: { children: React.ReactNode; title: string }) {
+export default function AdminShell({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title: string;
+}) {
   const path = usePathname();
   const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
@@ -26,7 +46,7 @@ export default function AdminShell({ children, title }: { children: React.ReactN
     const supabase = createSupabaseBrowser();
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
-        router.replace('/login');
+        router.replace("/login");
         return;
       }
       setEmail(data.session.user.email ?? null);
@@ -41,12 +61,20 @@ export default function AdminShell({ children, title }: { children: React.ReactN
 
   async function logout() {
     await createSupabaseBrowser().auth.signOut();
-    router.push('/login');
+    router.push("/login");
   }
 
   if (!checked) {
     return (
-      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--ink-500)' }}>
+      <div
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "var(--ink-500)",
+        }}
+      >
         Đang kiểm tra đăng nhập...
       </div>
     );
@@ -54,17 +82,27 @@ export default function AdminShell({ children, title }: { children: React.ReactN
 
   return (
     <div className="admin-shell">
-      {mobileOpen && <div className="admin-sidebar-overlay" onClick={() => setMobileOpen(false)} />}
+      {mobileOpen && (
+        <div
+          className="admin-sidebar-overlay"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
-      <aside className={`admin-sidebar${mobileOpen ? ' open' : ''}`}>
+      <aside className={`admin-sidebar${mobileOpen ? " open" : ""}`}>
         <div className="brand">
-          <span className="crest" style={{ width: 32, height: 32, fontSize: 15 }}>
+          <span
+            className="crest"
+            style={{ width: 32, height: 32, fontSize: 15 }}
+          >
             ♛
           </span>
           <div style={{ marginTop: 8 }}>
             <b>Madridista News VN</b>
             <br />
-            <small style={{ color: 'var(--gold-400)', fontSize: 11 }}>Trang quản trị</small>
+            <small style={{ color: "var(--gold-400)", fontSize: 11 }}>
+              Trang quản trị
+            </small>
           </div>
         </div>
         <nav>
@@ -72,7 +110,11 @@ export default function AdminShell({ children, title }: { children: React.ReactN
             const Icon = l.icon;
             const active = path === l.href;
             return (
-              <Link key={l.href} href={l.href} className={active ? 'active' : ''}>
+              <Link
+                key={l.href}
+                href={l.href}
+                className={active ? "active" : ""}
+              >
                 <Icon size={16} /> {l.label}
               </Link>
             );
@@ -86,7 +128,9 @@ export default function AdminShell({ children, title }: { children: React.ReactN
           </button>
         </nav>
         <div className="foot-link">
-          <span className="admin-user-avatar">{(email ?? '?').slice(0, 1)}</span>
+          <span className="admin-user-avatar">
+            {(email ?? "?").slice(0, 1)}
+          </span>
           <span className="admin-user-email">{email}</span>
         </div>
       </aside>

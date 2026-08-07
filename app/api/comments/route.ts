@@ -12,6 +12,7 @@ export async function GET(req: NextRequest) {
       .from('comments')
       .select('*')
       .eq('article_id', articleId)
+      .eq('status', 'approved')
       .order('created_at', { ascending: false })
       .limit(200);
     if (error) throw error;
@@ -38,7 +39,12 @@ export async function POST(req: NextRequest) {
     const db = createSupabaseAdmin();
     const { data, error } = await db
       .from('comments')
-      .insert({ article_id: articleId, author_name: authorName || 'Độc giả ẩn danh', content })
+      .insert({
+        article_id: articleId,
+        author_name: authorName || 'Độc giả ẩn danh',
+        content,
+        status: 'pending',
+      })
       .select('*')
       .single();
     if (error) throw error;

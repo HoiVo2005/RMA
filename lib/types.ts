@@ -1,5 +1,7 @@
 export type ArticleStatus = 'draft' | 'published' | 'hidden' | 'rejected';
 
+export type CommentStatus = 'pending' | 'approved' | 'hidden';
+
 export type Article = {
   id: string;
   slug?: string | null;
@@ -110,5 +112,6 @@ export type Comment = {
   author_name: string;
   content: string;
   likes: number;
+  status?: CommentStatus;
   created_at: string;
 };
