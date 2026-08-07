@@ -6,6 +6,8 @@ import {
   useMemo,
   useState,
 } from "react";
+import Swal from "sweetalert2";
+import "sweetalert2/dist/sweetalert2.min.css";
 import { adminJson } from "@/lib/admin-client";
 import { Plus, Pencil, Trash2, X, Search } from "lucide-react";
 
@@ -200,19 +202,60 @@ const CrudManager = forwardRef<CrudManagerHandle, Props>(function CrudManager(
     setSaving(false);
     if (res.error) {
       setError(res.error);
+      Swal.fire({
+        icon: "error",
+        title: "Thất bại",
+        text: res.error,
+      });
       return;
     }
     closeDrawer();
     load();
+    Swal.fire({
+      icon: "success",
+      title: `${isNew ? "Thêm" : "Cập nhật"} ${entityLabel} thành công`,
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 1800,
+      timerProgressBar: true,
+    });
   }
 
   async function remove(id: string) {
-    if (!confirm(`Xóa ${entityLabel} này? Hành động không thể hoàn tác.`))
-      return;
+    const result = await Swal.fire({
+      title: `Xóa ${entityLabel}`,
+      text: "Hành động này không thể hoàn tác.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Xóa",
+      cancelButtonText: "Hủy",
+      reverseButtons: true,
+      focusCancel: true,
+    });
+    if (!result.isConfirmed) return;
+
     setDeletingId(id);
-    await adminJson(endpoint + "?id=" + id, { method: "DELETE" });
+    const res = await adminJson(endpoint + "?id=" + id, { method: "DELETE" });
     setDeletingId(null);
+    if (res.error) {
+      Swal.fire({
+        icon: "error",
+        title: "Xóa thất bại",
+        text: res.error,
+      });
+      return;
+    }
     load();
+    Swal.fire({
+      icon: "success",
+      title: `Đã xóa ${entityLabel}`,
+      toast: true,
+      position: "top-end",
+      showConfirmButton: false,
+      timer: 1600,
+      timerProgressBar: true,
+    });
   }
 
   return (

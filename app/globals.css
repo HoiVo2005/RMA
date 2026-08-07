@@ -2505,16 +2505,17 @@ select.filter-select {
   z-index: 100;
   display: flex;
   justify-content: flex-end;
+  backdrop-filter: blur(6px);
 }
 
 .drawer {
-  background: var(--bg);
-  width: 100%;
-  max-width: 560px;
+  background: rgba(255, 255, 255, 0.96);
+  width: min(100%, 640px);
   height: 100%;
   overflow-y: auto;
   box-shadow: var(--shadow-lg);
-  animation: slideIn 0.2s ease-out;
+  animation: slideIn 0.22s ease-out;
+  border-left: 1px solid rgba(15, 23, 42, 0.08);
 }
 
 @keyframes slideIn {
@@ -2532,9 +2533,10 @@ select.filter-select {
 .drawer-head {
   position: sticky;
   top: 0;
-  background: var(--white);
-  padding: 18px 24px;
-  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(12px);
+  padding: 20px 26px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2543,79 +2545,95 @@ select.filter-select {
 
 .drawer-head h2 {
   margin: 0;
-  font-size: 16.5px;
-  color: var(--navy-900);
+  font-size: 18px;
+  color: var(--navy-950);
 }
 
 .drawer-head button.close {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: var(--ink-300);
-  line-height: 1;
-  padding: 4px;
+  background: rgba(15, 23, 42, 0.06);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 999px;
+  width: 38px;
+  height: 38px;
+  color: var(--ink-500);
+  display: grid;
+  place-items: center;
 }
 
 .drawer-body {
-  padding: 22px 24px 60px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  padding: 24px 28px 72px;
+  display: grid;
+  gap: 20px;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
+  padding: 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 18px;
+  background: var(--surface);
 }
 
 .field label {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--ink-700);
+  color: var(--ink-900);
 }
 
 .field .hint {
-  font-size: 11.5px;
-  color: var(--ink-300);
+  font-size: 12px;
+  color: var(--ink-400);
   font-weight: 400;
 }
 
 .field input,
 .field select,
 .field textarea {
-  padding: 10px 12px;
-  border: 1px solid var(--line);
-  border-radius: var(--radius-sm);
-  font-size: 13.5px;
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 16px;
+  font-size: 14px;
   background: var(--white);
   outline: none;
   width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
   border-color: var(--navy-800);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
 }
 
 .field textarea {
   resize: vertical;
-  min-height: 80px;
-  line-height: 1.5;
+  min-height: 120px;
+  line-height: 1.7;
 }
 
 .field-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+@media (max-width: 850px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
 }
 
 .field-check {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex-direction: row;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  border-radius: 16px;
+  background: var(--white);
 }
 
 .field-check input {
@@ -2623,25 +2641,28 @@ select.filter-select {
 }
 
 .field-check label {
-  font-weight: 600;
-  font-size: 13px;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink-900);
 }
 
 .form-actions {
   display: flex;
-  gap: 10px;
-  padding-top: 6px;
+  gap: 12px;
+  padding: 14px 28px 24px;
   position: sticky;
   bottom: 0;
-  background: var(--bg);
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+  backdrop-filter: blur(10px);
 }
 
 .form-error {
-  background: rgba(200, 16, 46, 0.08);
+  background: rgba(254, 226, 226, 0.8);
   color: var(--red-600);
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 13px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-size: 14px;
 }
 
 .feature-toggle {
