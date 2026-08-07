@@ -11,8 +11,13 @@ create table if not exists public.comments (
   author_name text not null default 'Độc giả',
   content text not null,
   likes integer not null default 0,
+  status text not null default 'pending'
+    check (status in ('pending', 'approved', 'hidden')),
   created_at timestamptz not null default now()
 );
+
+alter table public.comments add column if not exists status text not null default 'pending'
+  check (status in ('pending', 'approved', 'hidden'));
 
 create index if not exists comments_article_id_idx on public.comments (article_id, created_at desc);
 
