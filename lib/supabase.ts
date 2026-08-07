@@ -11,7 +11,6 @@ export function createSupabaseBrowser() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   );
 }
-
 /** Client phía server dùng service role — bỏ qua RLS, chỉ dùng trong API routes đã xác thực admin. */
 export function createSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
