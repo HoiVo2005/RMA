@@ -1962,7 +1962,7 @@ textarea {
   gap: 12px;
 }
 
-..auth-card input {
+.auth-card input {
   padding: 11px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
