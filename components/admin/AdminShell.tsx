@@ -9,6 +9,7 @@ import {
   Radio,
   Trophy,
   Users,
+  Clock11,
   LogOut,
   ExternalLink,
   Shield,
@@ -25,6 +26,7 @@ const links = [
   { href: "/admin/nguon-tin", label: "Nguồn tin", icon: Radio },
   { href: "/admin/lich-thi-dau", label: "Lịch thi đấu", icon: Trophy },
   { href: "/admin/doi-hinh", label: "Đội hình", icon: Users },
+  { href: "/admin/active-sessions", label: "Phiên đăng nhập", icon: Clock11 },
   { href: "/admin/thong-tin-clb", label: "Thông tin CLB", icon: Shield },
   { href: "/admin/cai-dat", label: "Cài đặt", icon: Settings },
 ];

@@ -135,21 +135,69 @@ create table if not exists public.article_keywords (
 );
 
 -- =====================================================
+-- BÌNH LUẬN & TƯƠNG TÁC
+-- =====================================================
+create table if not exists public.comments (
+  id uuid primary key default gen_random_uuid(),
+  article_id uuid not null references public.articles(id) on delete cascade,
+  author_name text not null default 'Độc giả',
+  content text not null,
+  likes integer not null default 0,
+  status text not null default 'pending'
+    check (status in ('pending', 'approved', 'hidden')),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists comments_article_id_idx on public.comments (article_id, created_at desc);
+
+alter table public.comments enable row level security;
+
+drop policy if exists "public read comments" on public.comments;
+create policy "public read comments" on public.comments for select using (true);
+
+create or replace function public.increment_comment_like(p_comment_id uuid)
+returns integer language plpgsql security definer as $$
+declare
+  new_likes integer;
+begin
+  update public.comments set likes = likes + 1 where id = p_comment_id
+  returning likes into new_likes;
+  return new_likes;
+end;
+$$;
+
+-- ---------- THÔNG BÁO ĐẨY (PUSH NOTIFICATIONS / PWA) ----------
+create table if not exists public.push_subscriptions (
+  id uuid primary key default gen_random_uuid(),
+  endpoint text not null unique,
+  p256dh text not null,
+  auth text not null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.push_subscriptions enable row level security;
+
+-- ---------- CẦU THỦ YÊU THÍCH (THEO DÕI) ----------
+create table if not exists public.player_follows (
+  id uuid primary key default gen_random_uuid(),
+  device_id text not null,
+  player_id uuid not null references public.players(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  unique (device_id, player_id)
+);
+
+alter table public.player_follows enable row level security;
+
+-- =====================================================
 -- CẦU THỦ
 -- =====================================================
-create table if not exists public.players (
-  id uuid primary key default gen_random_uuid(),
-  name text not null,
-  slug text not null unique,
-  shirt_number integer,
-  position text,
-  nationality text,
-  image_url text,
-  date_of_birth date,
-  is_active boolean not null default true,
-  created_at timestamptz not null default now(),
-  updated_at timestamptz not null default now()
-);
+alter table public.players add column if not exists bio text;
+alter table public.players add column if not exists career_clubs text;
+alter table public.players add column if not exists honors text;
+alter table public.players add column if not exists birthplace text;
+alter table public.players add column if not exists height_cm integer;
+alter table public.players add column if not exists youth_clubs text;
+alter table public.players add column if not exists national_team text;
 
 -- =====================================================
 -- LỊCH THI ĐẤU
@@ -304,6 +352,9 @@ alter table public.news_sources enable row level security;
 alter table public.categories enable row level security;
 alter table public.players enable row level security;
 alter table public.fixtures enable row level security;
+alter table public.comments enable row level security;
+alter table public.push_subscriptions enable row level security;
+alter table public.player_follows enable row level security;
 alter table public.admin_profiles enable row level security;
 alter table public.cron_logs enable row level security;
 alter table public.site_settings enable row level security;
@@ -313,6 +364,7 @@ drop policy if exists "public read sources" on public.news_sources;
 drop policy if exists "public read categories" on public.categories;
 drop policy if exists "public read players" on public.players;
 drop policy if exists "public read fixtures" on public.fixtures;
+drop policy if exists "public read comments" on public.comments;
 drop policy if exists "admins manage articles" on public.articles;
 drop policy if exists "admins manage sources" on public.news_sources;
 drop policy if exists "admins manage categories" on public.categories;

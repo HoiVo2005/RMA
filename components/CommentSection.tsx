@@ -2,13 +2,12 @@
 import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { Heart, MessageCircle, Send } from "lucide-react";
-import { createSupabaseBrowser } from "@/lib/supabase";
 import type { Comment } from "@/lib/types";
 import { timeAgo } from "./Badges";
 import { useSiteSettings } from "./SiteSettingsProvider";
+import { useUserSession } from "./UserAuthButton";
 
 const LIKED_KEY = "mnvn_liked_comments";
-const NAME_KEY = "mnvn_comment_name";
 
 function loadLiked(): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -21,10 +20,9 @@ function loadLiked(): Set<string> {
 
 export default function CommentSection({ articleId }: { articleId: string }) {
   const settings = useSiteSettings();
+  const { userEmail, userName } = useUserSession();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
-  const [name, setName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [liked, setLiked] = useState<Set<string>>(new Set());
@@ -32,14 +30,7 @@ export default function CommentSection({ articleId }: { articleId: string }) {
 
   useEffect(() => {
     setLiked(loadLiked());
-    setName(window.localStorage.getItem(NAME_KEY) || "");
     load();
-
-    createSupabaseBrowser()
-      .auth.getSession()
-      .then(({ data }) => {
-        setUserEmail(data.session?.user?.email ?? "");
-      });
   }, [articleId]);
 
   async function load() {
@@ -56,17 +47,20 @@ export default function CommentSection({ articleId }: { articleId: string }) {
 
   async function submit(e: FormEvent) {
     e.preventDefault();
+    if (!userEmail) {
+      setStatusMessage("Vui lòng đăng nhập để bình luận.");
+      return;
+    }
     if (!content.trim()) return;
     setSubmitting(true);
     setStatusMessage("");
     try {
-      window.localStorage.setItem(NAME_KEY, name);
       const res = await fetch("/api/comments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           article_id: articleId,
-          author_name: name.trim() || userEmail || "Độc giả ẩn danh",
+          author_name: userName || userEmail,
           content,
         }),
       });
@@ -114,14 +108,6 @@ export default function CommentSection({ articleId }: { articleId: string }) {
       </h2>
 
       <form className="comment-form" onSubmit={submit}>
-        <div className="comment-form-row">
-          <input
-            placeholder="Tên của bạn (không bắt buộc)"
-            value={name}
-            maxLength={60}
-            onChange={(e) => setName(e.target.value)}
-          />
-        </div>
         <textarea
           placeholder="Chia sẻ suy nghĩ của bạn về bài viết này..."
           value={content}
@@ -130,22 +116,12 @@ export default function CommentSection({ articleId }: { articleId: string }) {
         />
         {userEmail ? (
           <div className="comment-info">
-            Đang dùng tài khoản <b>{userEmail}</b>.{" "}
-            <button
-              type="button"
-              className="link-button"
-              onClick={async () => {
-                await createSupabaseBrowser().auth.signOut();
-                setUserEmail("");
-              }}
-            >
-              Đăng xuất
-            </button>
+            Đang dùng tài khoản <b>{userName || userEmail}</b>.
           </div>
         ) : (
           <div className="comment-info">
-            <Link href="/login">Đăng nhập người dùng</Link> để bình luận bằng
-            tài khoản.
+            <Link href="/login">Đăng nhập</Link> hoặc{" "}
+            <Link href="/register">đăng ký</Link> để bình luận.
           </div>
         )}
         {statusMessage && (

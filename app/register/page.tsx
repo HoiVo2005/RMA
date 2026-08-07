@@ -5,6 +5,7 @@ import { createSupabaseBrowser } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,6 +16,10 @@ export default function RegisterPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setMsg("");
+    if (!fullName.trim()) {
+      setMsg("Vui lòng nhập họ tên.");
+      return;
+    }
     if (password !== confirmPassword) {
       setMsg("Mật khẩu và xác nhận mật khẩu không trùng nhau.");
       return;
@@ -25,11 +30,17 @@ export default function RegisterPage() {
       const { error } = await createSupabaseBrowser().auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: fullName.trim(),
+          },
+        },
       });
       if (error) throw error;
       setMsg(
         "Đăng ký thành công! Vui lòng kiểm tra email nếu cần xác nhận, sau đó đăng nhập.",
       );
+      setFullName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
@@ -51,6 +62,13 @@ export default function RegisterPage() {
           Không dùng để truy cập quản trị.
         </p>
         <form onSubmit={submit}>
+          <input
+            placeholder="Họ và tên"
+            type="text"
+            required
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+          />
           <input
             placeholder="Email"
             type="email"

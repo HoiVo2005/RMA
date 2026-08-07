@@ -1,6 +1,8 @@
-'use client';
-import { useEffect, useState } from 'react';
-import { Star } from 'lucide-react';
+"use client";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Star } from "lucide-react";
+import { useUserSession } from "./UserAuthButton";
 
 export type FollowedPlayer = {
   id: string;
@@ -9,12 +11,12 @@ export type FollowedPlayer = {
   position: string | null;
 };
 
-const KEY = 'mnvn_followed_players';
+const KEY = "mnvn_followed_players";
 
 export function getFollowed(): FollowedPlayer[] {
-  if (typeof window === 'undefined') return [];
+  if (typeof window === "undefined") return [];
   try {
-    return JSON.parse(window.localStorage.getItem(KEY) || '[]');
+    return JSON.parse(window.localStorage.getItem(KEY) || "[]");
   } catch {
     return [];
   }
@@ -22,10 +24,16 @@ export function getFollowed(): FollowedPlayer[] {
 
 function setFollowed(list: FollowedPlayer[]) {
   window.localStorage.setItem(KEY, JSON.stringify(list));
-  window.dispatchEvent(new Event('mnvn_followed_changed'));
+  window.dispatchEvent(new Event("mnvn_followed_changed"));
 }
 
-export default function FollowPlayerButton({ player }: { player: FollowedPlayer }) {
+export default function FollowPlayerButton({
+  player,
+}: {
+  player: FollowedPlayer;
+}) {
+  const router = useRouter();
+  const { userEmail } = useUserSession();
   const [following, setFollowing] = useState(false);
 
   useEffect(() => {
@@ -35,6 +43,10 @@ export default function FollowPlayerButton({ player }: { player: FollowedPlayer 
   function toggle(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
+    if (!userEmail) {
+      router.push("/login");
+      return;
+    }
     const list = getFollowed();
     if (following) {
       setFollowed(list.filter((p) => p.id !== player.id));
@@ -47,12 +59,12 @@ export default function FollowPlayerButton({ player }: { player: FollowedPlayer 
 
   return (
     <button
-      className={`follow-player-btn ${following ? 'is-following' : ''}`}
+      className={`follow-player-btn ${following ? "is-following" : ""}`}
       onClick={toggle}
-      title={following ? 'Bỏ theo dõi cầu thủ' : 'Theo dõi cầu thủ'}
+      title={following ? "Bỏ theo dõi cầu thủ" : "Theo dõi cầu thủ"}
     >
-      <Star size={13} fill={following ? 'currentColor' : 'none'} />
-      {following ? 'Đang theo dõi' : 'Theo dõi'}
+      <Star size={13} fill={following ? "currentColor" : "none"} />
+      {following ? "Đang theo dõi" : "Theo dõi"}
     </button>
   );
 }
