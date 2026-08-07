@@ -28,7 +28,8 @@ export default function AdminActiveSessionsPage() {
       if (res.error) {
         setError(res.error);
       } else {
-        setSessions(res.data || []);
+        const data = Array.isArray(res.data) ? res.data : [];
+        setSessions(data);
       }
       setLoading(false);
     }
