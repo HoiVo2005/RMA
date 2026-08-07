@@ -4,9 +4,10 @@ import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -14,17 +15,27 @@ export default function LoginPage() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setMsg("");
+    if (password !== confirmPassword) {
+      setMsg("Mật khẩu và xác nhận mật khẩu không trùng nhau.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const { error } = await createSupabaseBrowser().auth.signInWithPassword({
+      const { error } = await createSupabaseBrowser().auth.signUp({
         email,
         password,
       });
       if (error) throw error;
-      router.push("/");
-      router.refresh();
+      setMsg(
+        "Đăng ký thành công! Vui lòng kiểm tra email nếu cần xác nhận, sau đó đăng nhập.",
+      );
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      router.push("/login");
     } catch (e: any) {
-      setMsg(e.message || "Đăng nhập thất bại");
+      setMsg(e.message || "Đăng ký thất bại.");
     } finally {
       setLoading(false);
     }
@@ -34,9 +45,10 @@ export default function LoginPage() {
     <main className="auth-page">
       <div className="auth-card">
         <div className="crest">♛</div>
-        <h1>Đăng nhập người dùng</h1>
+        <h1>Đăng ký tài khoản đọc giả</h1>
         <p className="sub">
-          Sử dụng để bình luận và truy cập các tính năng người dùng.
+          Tài khoản đọc giả chỉ dùng để bình luận và trải nghiệm người dùng.
+          Không dùng để truy cập quản trị.
         </p>
         <form onSubmit={submit}>
           <input
@@ -53,14 +65,20 @@ export default function LoginPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+          <input
+            placeholder="Xác nhận mật khẩu"
+            type="password"
+            required
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
           <button disabled={loading}>
-            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            {loading ? "Đang tạo tài khoản..." : "Đăng ký"}
           </button>
           {msg && <p className="error">{msg}</p>}
         </form>
         <div className="auth-links">
-          <Link href="/register">Tạo tài khoản đọc giả</Link>
-          <Link href="/admin/login">Đăng nhập quản trị</Link>
+          <Link href="/login">Đã có tài khoản? Đăng nhập</Link>
           <Link href="/">← Về trang chủ</Link>
         </div>
       </div>

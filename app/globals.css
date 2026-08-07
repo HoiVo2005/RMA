@@ -1997,6 +1997,24 @@ textarea {
   margin: 6px 0 0;
 }
 
+.auth-card .auth-links {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 18px;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+
+.auth-card .auth-links a {
+  color: var(--ink-500);
+  text-decoration: none;
+}
+
+.auth-card .auth-links a:hover {
+  color: var(--navy-900);
+}
+
 .auth-card .back-link {
   display: block;
   margin-top: 18px;

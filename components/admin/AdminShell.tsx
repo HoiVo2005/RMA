@@ -46,7 +46,7 @@ export default function AdminShell({
     const supabase = createSupabaseBrowser();
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
-        router.replace("/login");
+        router.replace("/admin/login");
         return;
       }
       setEmail(data.session.user.email ?? null);
@@ -61,7 +61,7 @@ export default function AdminShell({
 
   async function logout() {
     await createSupabaseBrowser().auth.signOut();
-    router.push("/login");
+    router.push("/admin/login");
   }
 
   if (!checked) {

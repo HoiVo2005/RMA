@@ -1,6 +1,8 @@
 "use client";
+import Link from "next/link";
 import { FormEvent, useEffect, useState } from "react";
 import { Heart, MessageCircle, Send } from "lucide-react";
+import { createSupabaseBrowser } from "@/lib/supabase";
 import type { Comment } from "@/lib/types";
 import { timeAgo } from "./Badges";
 import { useSiteSettings } from "./SiteSettingsProvider";
@@ -22,6 +24,7 @@ export default function CommentSection({ articleId }: { articleId: string }) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
   const [name, setName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [liked, setLiked] = useState<Set<string>>(new Set());
@@ -31,6 +34,12 @@ export default function CommentSection({ articleId }: { articleId: string }) {
     setLiked(loadLiked());
     setName(window.localStorage.getItem(NAME_KEY) || "");
     load();
+
+    createSupabaseBrowser()
+      .auth.getSession()
+      .then(({ data }) => {
+        setUserEmail(data.session?.user?.email ?? "");
+      });
   }, [articleId]);
 
   async function load() {
@@ -57,7 +66,7 @@ export default function CommentSection({ articleId }: { articleId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           article_id: articleId,
-          author_name: name,
+          author_name: name.trim() || userEmail || "Độc giả ẩn danh",
           content,
         }),
       });
@@ -119,6 +128,26 @@ export default function CommentSection({ articleId }: { articleId: string }) {
           maxLength={1000}
           onChange={(e) => setContent(e.target.value)}
         />
+        {userEmail ? (
+          <div className="comment-info">
+            Đang dùng tài khoản <b>{userEmail}</b>.{" "}
+            <button
+              type="button"
+              className="link-button"
+              onClick={async () => {
+                await createSupabaseBrowser().auth.signOut();
+                setUserEmail("");
+              }}
+            >
+              Đăng xuất
+            </button>
+          </div>
+        ) : (
+          <div className="comment-info">
+            <Link href="/login">Đăng nhập người dùng</Link> để bình luận bằng
+            tài khoản.
+          </div>
+        )}
         {statusMessage && (
           <div
             className={

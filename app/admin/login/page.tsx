@@ -1,10 +1,10 @@
 "use client";
-import Link from "next/link";
 import { useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-export default function LoginPage() {
+export default function AdminLoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [msg, setMsg] = useState("");
@@ -21,7 +21,7 @@ export default function LoginPage() {
         password,
       });
       if (error) throw error;
-      router.push("/");
+      router.push("/admin");
       router.refresh();
     } catch (e: any) {
       setMsg(e.message || "Đăng nhập thất bại");
@@ -34,10 +34,8 @@ export default function LoginPage() {
     <main className="auth-page">
       <div className="auth-card">
         <div className="crest">♛</div>
-        <h1>Đăng nhập người dùng</h1>
-        <p className="sub">
-          Sử dụng để bình luận và truy cập các tính năng người dùng.
-        </p>
+        <h1>Đăng nhập quản trị</h1>
+        <p className="sub">Truy cập trang quản trị Madridista News VN</p>
         <form onSubmit={submit}>
           <input
             placeholder="Email"
@@ -59,8 +57,7 @@ export default function LoginPage() {
           {msg && <p className="error">{msg}</p>}
         </form>
         <div className="auth-links">
-          <Link href="/register">Tạo tài khoản đọc giả</Link>
-          <Link href="/admin/login">Đăng nhập quản trị</Link>
+          <Link href="/login">Đăng nhập người dùng</Link>
           <Link href="/">← Về trang chủ</Link>
         </div>
       </div>
