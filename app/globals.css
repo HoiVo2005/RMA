@@ -1962,13 +1962,37 @@ textarea {
   gap: 12px;
 }
 
-.auth-card input {
+..auth-card input {
   padding: 11px 14px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   font-size: 14px;
   outline: none;
   transition: border-color 0.15s;
+}
+
+.auth-card .password-wrapper {
+  position: relative;
+}
+
+.auth-card .password-wrapper input {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.auth-card .password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: var(--ink-600);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .auth-card input:focus {

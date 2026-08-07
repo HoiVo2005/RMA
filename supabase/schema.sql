@@ -166,6 +166,16 @@ begin
 end;
 $$;
 
+create view if not exists public.auth_sessions as
+select
+  id,
+  user_id,
+  created_at,
+  expires_at,
+  ip_address,
+  user_agent
+from auth.sessions;
+
 -- ---------- THÔNG BÁO ĐẨY (PUSH NOTIFICATIONS / PWA) ----------
 create table if not exists public.push_subscriptions (
   id uuid primary key default gen_random_uuid(),

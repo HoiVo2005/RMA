@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "apply:supabase": "node ./scripts/apply-supabase-schema.js"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
@@ -14,6 +15,7 @@
     "cheerio": "^1.0.0",
     "lucide-react": "^0.468.0",
     "next": "16.2.9",
+    "pg": "^8.11.2",
     "react": "19.2.7",
     "react-dom": "19.2.7",
     "rss-parser": "^3.13.0",

@@ -7,7 +7,7 @@ export async function GET(req: NextRequest) {
 
     const now = new Date().toISOString();
     const { data: sessions, error } = await admin
-        .from('auth.sessions')
+        .from('auth_sessions')
         .select('id,user_id,created_at,expires_at,ip_address,user_agent')
         .gt('expires_at', now)
         .order('created_at', { ascending: false })

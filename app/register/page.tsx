@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { createSupabaseBrowser } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
@@ -9,6 +10,8 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [msg, setMsg] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -46,7 +49,19 @@ export default function RegisterPage() {
       setConfirmPassword("");
       router.push("/login");
     } catch (e: any) {
-      setMsg(e.message || "Đăng ký thất bại.");
+      const text = e?.message?.toLowerCase?.() ?? "";
+      if (text.includes("invalid email")) {
+        setMsg("Email không hợp lệ.");
+      } else if (
+        text.includes("user already registered") ||
+        text.includes("already registered")
+      ) {
+        setMsg("Email này đã được đăng ký.");
+      } else if (text.includes("password")) {
+        setMsg("Mật khẩu phải có độ dài đủ và hợp lệ.");
+      } else {
+        setMsg(e.message || "Đăng ký thất bại.");
+      }
     } finally {
       setLoading(false);
     }
@@ -76,20 +91,40 @@ export default function RegisterPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
-          <input
-            placeholder="Mật khẩu"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <input
-            placeholder="Xác nhận mật khẩu"
-            type="password"
-            required
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
+          <div className="password-wrapper">
+            <input
+              placeholder="Mật khẩu"
+              type={showPassword ? "text" : "password"}
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword((prev) => !prev)}
+              aria-label={showPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
+          <div className="password-wrapper">
+            <input
+              placeholder="Xác nhận mật khẩu"
+              type={showConfirmPassword ? "text" : "password"}
+              required
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowConfirmPassword((prev) => !prev)}
+              aria-label={showConfirmPassword ? "Ẩn mật khẩu" : "Hiện mật khẩu"}
+            >
+              {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
           <button disabled={loading}>
             {loading ? "Đang tạo tài khoản..." : "Đăng ký"}
           </button>
