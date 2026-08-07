@@ -18,6 +18,7 @@ import LineupSection from "@/components/LineupSection";
 import CountdownTimer from "@/components/CountdownTimer";
 import PredictionWidget from "@/components/PredictionWidget";
 import LiveMatchCenter from "@/components/LiveMatchCenter";
+import RecommendedArticles from "@/components/RecommendedArticles";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -208,6 +209,8 @@ export default async function Home() {
 
       <div className="container">
         <LiveMatchCenter initial={liveFixture} />
+
+        <RecommendedArticles />
 
         <nav className="quick-nav">
           {quickNav.map((n) => {
