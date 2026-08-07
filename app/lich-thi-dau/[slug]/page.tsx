@@ -9,7 +9,7 @@ import { notFound, redirect } from "next/navigation";
 import type { FixtureEvent } from "@/lib/types";
 import LineupSection from "@/components/LineupSection";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 const statusLabel: Record<string, string> = {
   scheduled: "Sắp diễn ra",

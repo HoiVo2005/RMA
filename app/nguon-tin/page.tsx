@@ -1,8 +1,8 @@
-import Page from '@/components/Page';
-import { getSources } from '@/lib/data';
-import { ExternalLink } from 'lucide-react';
+import Page from "@/components/Page";
+import { getSources } from "@/lib/data";
+import { ExternalLink } from "lucide-react";
 
-export const revalidate = 600;
+export const dynamic = "force-dynamic";
 
 export default async function NguonTinPage() {
   const sources = await getSources();
@@ -20,8 +20,14 @@ export default async function NguonTinPage() {
               <span className="s-country">{s.country}</span>
               <span className="badge badge-category">{s.reliability}</span>
               {s.website_url && (
-                <a className="s-link" target="_blank" rel="noopener noreferrer" href={s.website_url}>
-                  Mở nguồn <ExternalLink size={12} style={{ verticalAlign: -1 }} />
+                <a
+                  className="s-link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  href={s.website_url}
+                >
+                  Mở nguồn{" "}
+                  <ExternalLink size={12} style={{ verticalAlign: -1 }} />
                 </a>
               )}
             </div>

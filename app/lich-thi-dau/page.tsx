@@ -5,7 +5,7 @@ import type { Fixture } from "@/lib/types";
 import { COMPETITIONS } from "@/lib/types";
 import { CalendarDays, ListOrdered } from "lucide-react";
 
-export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 const statusLabel: Record<string, string> = {
   scheduled: "Sắp diễn ra",

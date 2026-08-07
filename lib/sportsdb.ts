@@ -1,6 +1,7 @@
 import { createSupabaseAdmin } from './supabase';
 import { slugify } from './slug';
 import { mapRawEventsToFixtureEvents, type RawMatchEvent } from './football-events';
+import type { FixtureEvent } from './types';
 import {
   fetchApiFootballEvents,
   isApiFootballConfigured,
@@ -197,6 +198,94 @@ function mapTimelineToEvents(timeline: SportsDbTimelineItem[]) {
   // Chỉ giữ lại các dòng đúng loại (goal/card/subst) — lọc bỏ các strTimeline khác không hỗ trợ.
   const supported = raw.filter((_, i) => ['goal', 'card', 'subst'].includes((timeline[i].strTimeline || '').toLowerCase()));
   return mapRawEventsToFixtureEvents(supported);
+}
+
+type SportsDbFixturePayload = {
+  external_id: string;
+  competition: string;
+  home_team: string;
+  away_team: string;
+  home_logo_url: string | null;
+  away_logo_url: string | null;
+  stadium: string | null;
+  match_time: string;
+  status: string;
+  home_score: number | null;
+  away_score: number | null;
+  events?: FixtureEvent[];
+};
+
+function parseTheSportsDbEventId(url: string): string | null {
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.toLowerCase().includes('thesportsdb.com')) return null;
+
+    const idFromQuery = parsed.searchParams.get('id') || parsed.searchParams.get('event');
+    if (idFromQuery && /^\\d+$/.test(idFromQuery)) return idFromQuery;
+
+    const pathPatterns = [
+      /\/event(?:s)?\/(\\d+)/i,
+      /\/lookupevent(?:\.php)?\/?(\\d+)/i,
+      /\/(\\d+)(?:\/?$|\D)/,
+    ];
+    for (const pattern of pathPatterns) {
+      const match = parsed.pathname.match(pattern);
+      if (match?.[1]) return match[1];
+    }
+  } catch {
+    return null;
+  }
+  return null;
+}
+
+async function fetchTheSportsDbEvent(eventId: string): Promise<any | null> {
+  try {
+    const res = await fetch(`${base()}/lookupevent.php?id=${eventId}`, { signal: AbortSignal.timeout(15000) });
+    if (!res.ok) return null;
+    const json = await res.json();
+    return Array.isArray(json.events) ? json.events[0] : null;
+  } catch {
+    return null;
+  }
+}
+
+function mapEventToFixturePayload(ev: any): SportsDbFixturePayload {
+  return {
+    external_id: String(ev.idEvent),
+    competition: normalizeCompetition(ev.strLeague),
+    home_team: ev.strHomeTeam,
+    away_team: ev.strAwayTeam,
+    home_logo_url: ev.strHomeTeamBadge || null,
+    away_logo_url: ev.strAwayTeamBadge || null,
+    stadium: ev.strVenue || null,
+    match_time: toIsoDate(ev),
+    status: toStatus(ev),
+    home_score:
+      ev.intHomeScore !== null && ev.intHomeScore !== undefined
+        ? parseInt(String(ev.intHomeScore), 10)
+        : null,
+    away_score:
+      ev.intAwayScore !== null && ev.intAwayScore !== undefined
+        ? parseInt(String(ev.intAwayScore), 10)
+        : null,
+  };
+}
+
+export async function fetchFixtureFromTheSportsDBUrl(url: string): Promise<SportsDbFixturePayload | null> {
+  const eventId = parseTheSportsDbEventId(url);
+  if (!eventId) return null;
+
+  const ev = await fetchTheSportsDbEvent(eventId);
+  if (!ev) return null;
+
+  const payload = mapEventToFixturePayload(ev);
+  if (payload.status === 'finished') {
+    const timeline = await fetchEventTimeline(eventId);
+    const events = mapTimelineToEvents(timeline);
+    if (events.length) payload.events = events;
+  }
+
+  return payload;
 }
 
 /** Đồng bộ các trận gần nhất + sắp tới từ TheSportsDB vào bảng fixtures. */

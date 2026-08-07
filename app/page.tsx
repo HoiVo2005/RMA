@@ -34,7 +34,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export const revalidate = 120;
+export const dynamic = "force-dynamic";
 
 const quickNav = [
   { href: "/tin-moi", label: "Tin mới", icon: Newspaper },
