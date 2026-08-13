@@ -64,7 +64,7 @@ async function saveToSupabase(items: MatchData[]) {
         fetched_at: it.fetchedAt
     }));
 
-    const { data, error } = await supabase.from('sofascore_matches').upsert(rows, { onConflict: ['url'] });
+    const { data, error } = await supabase.from('sofascore_matches').upsert(rows, { onConflict: 'url' });
     if (error) {
         throw error;
     }
