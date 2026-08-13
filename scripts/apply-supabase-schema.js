@@ -77,12 +77,13 @@ async function main() {
     try {
         await client.connect();
         const root = path.join(__dirname, '..');
-        const files = [
-            path.join(root, 'supabase', 'schema.sql'),
-            path.join(root, 'supabase', 'migration-modern-features.sql'),
-        ];
+        const supabaseDir = path.join(root, 'supabase');
+        const allFiles = fs.readdirSync(supabaseDir)
+            .filter((f) => f.endsWith('.sql'))
+            .sort()
+            .map((f) => path.join(supabaseDir, f));
 
-        for (const file of files) {
+        for (const file of allFiles) {
             await applySqlFile(client, file);
         }
 

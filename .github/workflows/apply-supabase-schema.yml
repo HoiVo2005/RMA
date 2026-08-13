@@ -1,0 +1,61 @@
+name: Apply Supabase Schema
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Debug info
+        run: |
+          node -v
+          npm -v
+          pwd
+          ls -la supabase || true
+
+      - name: Check Supabase secrets
+        run: |
+          if [ -z "${NEXT_PUBLIC_SUPABASE_URL}" ] || [ -z "${SUPABASE_SERVICE_ROLE_KEY}" ]; then
+            echo "ERROR: Required Supabase secrets are missing. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in repo secrets.";
+            exit 1;
+          else
+            echo "Supabase secrets present.";
+          fi
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Apply Supabase schema
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        id: apply
+        run: |
+          set -o pipefail
+          npm run apply:supabase
+
+      - name: Report result
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          REPO="${{ github.repository }}"
+          STATUS="${{ job.status }}"
+          BODY="Apply Supabase Schema run for $REPO finished with status: $STATUS (ref: ${{ github.ref }})"
+          echo "$BODY"
+          curl -s -X POST -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" \
+            https://api.github.com/repos/${REPO}/issues -d "{\"title\": \"Supabase schema apply: $STATUS\", \"body\": \"$BODY\"}" || true

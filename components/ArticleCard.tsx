@@ -1,20 +1,32 @@
-import Link from 'next/link';
-import type { Article } from '@/lib/types';
-import { ArticleBadges, timeAgo } from './Badges';
-import SaveButton from './SaveButton';
-import { articleHref } from '@/lib/article-url';
+import Link from "next/link";
+import type { Article } from "@/lib/types";
+import { ArticleBadges, timeAgo } from "./Badges";
+import SaveButton from "./SaveButton";
+import { articleHref } from "@/lib/article-url";
 
 export default function ArticleCard({ a }: { a: Article }) {
   return (
     <article className="card">
       {a.image_url ? (
-        <img className="card-img" src={a.image_url} alt={a.translated_title} loading="lazy" />
+        <img
+          className="card-img"
+          src={a.image_url}
+          alt={a.translated_title}
+          loading="lazy"
+        />
       ) : (
         <div className="card-img" />
       )}
       <SaveButton
         floating
-        article={{ id: a.id, slug: a.slug, title: a.translated_title, image: a.image_url, category: a.category, savedAt: '' }}
+        article={{
+          id: a.id,
+          slug: a.slug,
+          title: a.translated_title,
+          image: a.image_url,
+          category: a.category,
+          savedAt: "",
+        }}
       />
       <div className="card-body">
         <ArticleBadges a={a} />

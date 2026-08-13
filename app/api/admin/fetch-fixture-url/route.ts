@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/admin-api';
 import { createSupabaseAdmin } from '@/lib/supabase';
 import { fetchFixtureFromTheSportsDBUrl } from '@/lib/sportsdb';
+import { fetchFixtureFromOfficialUrl } from '@/lib/official';
 
 export async function POST(req: NextRequest) {
     const admin = await requireAdmin(req);
@@ -13,10 +14,15 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ error: 'URL không hợp lệ' }, { status: 400 });
     }
 
-    const payload = await fetchFixtureFromTheSportsDBUrl(url);
+    let payload = await fetchFixtureFromTheSportsDBUrl(url);
+    if (!payload) {
+        // Try official-site scraper as a fallback (Real Madrid, league pages, etc.)
+        payload = await fetchFixtureFromOfficialUrl(url);
+    }
+
     if (!payload) {
         return NextResponse.json(
-            { error: 'Không lấy được dữ liệu từ URL này. Vui lòng dùng link TheSportsDB hợp lệ.' },
+            { error: 'Không lấy được dữ liệu từ URL này. Vui lòng kiểm tra URL hoặc dùng đường dẫn TheSportsDB.' },
             { status: 400 },
         );
     }

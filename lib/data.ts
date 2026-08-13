@@ -156,6 +156,44 @@ export async function getFixtures(): Promise<Fixture[]> {
   return (data || []) as Fixture[];
 }
 
+/**
+ * Lấy các sự kiện/tin liên quan tới một chủ đề (topic) trong khoảng thời gian.
+ * Tìm trong `translated_title`, `summary_vi`, `content_vi`.
+ */
+export async function getTimelineEvents(
+  topic: string,
+  opts: { sinceHours?: number | null; limit?: number } = {},
+): Promise<Article[]> {
+  const c = client();
+  const limit = opts.limit || 200;
+  if (!c) {
+    // demo fallback: filter demoArticles
+    const q = demoArticles.filter((a) =>
+      `${a.translated_title} ${a.summary_vi} ${a.content_vi}`.toLowerCase().includes(topic.toLowerCase()),
+    );
+    if (opts.sinceHours) {
+      const cutoff = Date.now() - opts.sinceHours * 3600 * 1000;
+      return q.filter((a) => new Date(a.published_at || '').getTime() >= cutoff).slice(0, limit);
+    }
+    return q.slice(0, limit);
+  }
+
+  let q = c.from('articles').select('*').eq('status', 'published').order('published_at', { ascending: false }).limit(limit);
+
+  // match in title/summary/content (case-insensitive)
+  const safe = topic.replace(/%/g, '\\%').replace(/'/g, "''");
+  const orExpr = `translated_title.ilike.%${safe}%,summary_vi.ilike.%${safe}%,content_vi.ilike.%${safe}%`;
+  q = q.or(orExpr);
+
+  if (opts.sinceHours) {
+    const cutoff = new Date(Date.now() - opts.sinceHours * 3600 * 1000).toISOString();
+    q = q.gte('published_at', cutoff);
+  }
+
+  const { data, error } = await q;
+  return error ? [] : (data as Article[]);
+}
+
 export function getFixtureSlug(f: Fixture): string {
   const datePart = Number.isNaN(new Date(f.match_time).getTime())
     ? ''

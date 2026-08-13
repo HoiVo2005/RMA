@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "vercel-build": "npm run build && node ./scripts/apply-supabase-schema.js",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "apply:supabase": "node ./scripts/apply-supabase-schema.js"
@@ -27,6 +28,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@types/web-push": "^3.6.4",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "tsx": "^3.12.7"
   }
 }

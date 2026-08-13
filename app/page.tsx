@@ -20,6 +20,8 @@ import PredictionWidget from "@/components/PredictionWidget";
 import LiveMatchCenter from "@/components/LiveMatchCenter";
 import RecommendedArticles from "@/components/RecommendedArticles";
 import Link from "next/link";
+import TimelineCenter from "@/components/TimelineCenter";
+import TransferCenter from "@/components/TransferCenter";
 import {
   ArrowRight,
   Newspaper,
@@ -31,7 +33,6 @@ import {
   CalendarDays,
   Flame,
   Eye,
-  Sparkles,
 } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -74,49 +75,7 @@ export default async function Home() {
   const secondary = rest.slice(0, 3);
   const feed = rest.slice(3, 9);
   const quickReads = rest.slice(9, 13);
-  const topicHighlights = [
-    {
-      title: "Chuyển nhượng",
-      description:
-        "Tin nóng về thương vụ, mục tiêu mới và động thái của đội bóng",
-      href: "/chuyen-nhuong",
-      icon: Repeat2,
-    },
-    {
-      title: "Đội hình",
-      description: "Cập nhật sơ đồ, cầu thủ ra sân và nhân sự quan trọng",
-      href: "/doi-hinh",
-      icon: Users,
-    },
-    {
-      title: "Lịch thi đấu",
-      description:
-        "Xem lịch trận sắp tới, kết quả gần đây và thông tin giải đấu",
-      href: "/lich-thi-dau",
-      icon: CalendarDays,
-    },
-    {
-      title: "Tin mới",
-      description: "Tổng hợp các bài viết mới nhất cập nhật liên tục",
-      href: "/tin-moi",
-      icon: Newspaper,
-    },
-  ];
-
   const rmRank = standings?.table.find((r) => /real madrid/i.test(r.team));
-  const recentFixtures = fixtures
-    .filter(
-      (f) =>
-        f.home_score !== null &&
-        f.away_score !== null &&
-        f.home_score !== undefined &&
-        f.away_score !== undefined,
-    )
-    .sort(
-      (a, b) =>
-        new Date(b.match_time).getTime() - new Date(a.match_time).getTime(),
-    )
-    .slice(0, 3);
 
   return (
     <Page>
@@ -212,6 +171,17 @@ export default async function Home() {
 
         <RecommendedArticles />
 
+        <div style={{ marginTop: 18 }} className="container">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
+            <div>
+              <TransferCenter defaultTopic="Rodri" />
+            </div>
+            <div>
+              <TimelineCenter defaultTopic="Rodri" />
+            </div>
+          </div>
+        </div>
+
         <nav className="quick-nav">
           {quickNav.map((n) => {
             const Icon = n.icon;
@@ -227,104 +197,6 @@ export default async function Home() {
       </div>
 
       <div className="page-content">
-        {recentFixtures.length > 0 && (
-          <section className="recent-results-section">
-            <div className="section-title-row">
-              <h2 className="section-title">
-                <Trophy
-                  size={17}
-                  style={{ verticalAlign: -3, marginRight: 6 }}
-                />
-                Kết quả gần đây
-              </h2>
-              <Link href="/lich-thi-dau" className="section-more">
-                Xem lịch thi đấu <ArrowRight size={13} />
-              </Link>
-            </div>
-            <div className="recent-results-list">
-              {recentFixtures.map((f) => {
-                const isWin = (f.home_score ?? 0) > (f.away_score ?? 0);
-                const isDraw = (f.home_score ?? 0) === (f.away_score ?? 0);
-                return (
-                  <div className="recent-result-card" key={f.id}>
-                    <div className="recent-result-meta">
-                      <span>{f.competition}</span>
-                      <span>
-                        {new Date(f.match_time).toLocaleDateString("vi-VN", {
-                          day: "2-digit",
-                          month: "2-digit",
-                        })}
-                      </span>
-                    </div>
-                    <div className="recent-result-teams">
-                      <div className="recent-result-team">
-                        {f.home_logo_url ? (
-                          <img src={f.home_logo_url} alt={f.home_team} />
-                        ) : (
-                          <span className="team-badge team-badge-fallback">
-                            {f.home_team.slice(0, 2)}
-                          </span>
-                        )}
-                        <span>{f.home_team}</span>
-                      </div>
-                      <div className="recent-result-score">
-                        {f.home_score}:{f.away_score}
-                      </div>
-                      <div className="recent-result-team">
-                        {f.away_logo_url ? (
-                          <img src={f.away_logo_url} alt={f.away_team} />
-                        ) : (
-                          <span className="team-badge team-badge-fallback">
-                            {f.away_team.slice(0, 2)}
-                          </span>
-                        )}
-                        <span>{f.away_team}</span>
-                      </div>
-                    </div>
-                    <div
-                      className={`recent-result-status ${isDraw ? "is-draw" : isWin ? "is-win" : "is-loss"}`}
-                    >
-                      {isDraw ? "Hòa" : isWin ? "Thắng" : "Thua"}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        <section className="topic-highlights-section">
-          <div className="section-title-row">
-            <h2 className="section-title">
-              <Sparkles
-                size={17}
-                style={{ verticalAlign: -3, marginRight: 6 }}
-              />
-              Chủ đề nóng
-            </h2>
-          </div>
-          <div className="topic-highlights-grid">
-            {topicHighlights.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link
-                  href={item.href}
-                  className="topic-highlight-card"
-                  key={item.title}
-                >
-                  <div className="topic-highlight-icon">
-                    <Icon size={18} />
-                  </div>
-                  <div>
-                    <h3>{item.title}</h3>
-                    <p>{item.description}</p>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-
         <section>
           <div className="section-title-row">
             <h2 className="section-title">
