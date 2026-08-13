@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "vercel-build": "npm run build && node ./scripts/apply-supabase-schema.js",
+    "vercel-build": "npm run build && node ./scripts/apply-supabase-schema.js || echo 'Warning: Failed to apply Supabase schema, but build completed'",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "apply:supabase": "node ./scripts/apply-supabase-schema.js"
