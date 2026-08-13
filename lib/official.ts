@@ -1,18 +1,18 @@
 import { load, type CheerioAPI } from 'cheerio';
 
 type Payload = {
-    external_id: string | null;
-    competition?: string | null;
-    home_team?: string | null;
-    away_team?: string | null;
-    home_logo_url?: string | null;
-    away_logo_url?: string | null;
-    stadium?: string | null;
-    match_time?: string | null;
-    status?: string;
-    home_score?: number | null;
-    away_score?: number | null;
-    events?: any[];
+    external_id: string;
+    competition: string;
+    home_team: string;
+    away_team: string;
+    home_logo_url: string | null;
+    away_logo_url: string | null;
+    stadium: string | null;
+    match_time: string;
+    status: string;
+    home_score: number | null;
+    away_score: number | null;
+    events: any[];
 };
 
 function safeText(el: ReturnType<CheerioAPI>) {
@@ -86,26 +86,27 @@ export async function fetchFixtureFromOfficialUrl(url: string): Promise<Payload 
         }
 
         // Competition / stadium
-        const competition = $('meta[property="og:site_name"]').attr('content') || $('.competition, .tournament').first().text().trim() || null;
+        const competition = $('meta[property="og:site_name"]').attr('content') || $('.competition, .tournament').first().text().trim() || '';
         const stadium = $('.venue, .stadium, .ground').first().text().trim() || null;
+
+        // Basic validation before constructing payload
+        if (!home || !away || !time) return null;
 
         const payload: Payload = {
             external_id: url,
-            competition: competition || null,
-            home_team: home || null,
-            away_team: away || null,
+            competition: competition,
+            home_team: home,
+            away_team: away,
             home_logo_url: homeLogo || null,
             away_logo_url: awayLogo || null,
             stadium: stadium || null,
-            match_time: time || null,
+            match_time: time,
             status: 'scheduled',
             home_score: homeScore,
             away_score: awayScore,
             events: [],
         };
 
-        // Basic validation
-        if (!payload.home_team || !payload.away_team || !payload.match_time) return null;
         return payload;
     } catch (e) {
         return null;
