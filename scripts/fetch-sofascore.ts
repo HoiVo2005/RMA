@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import fetch from 'node-fetch';
-import cheerio from 'cheerio';
+import { load } from 'cheerio';
 import { createSupabaseAdmin } from '../lib/supabase';
 
 type MatchData = {
@@ -23,7 +22,7 @@ async function fetchHtml(url: string) {
 }
 
 function parseJsonLd(html: string) {
-    const $ = cheerio.load(html);
+    const $ = load(html);
     const scripts = $('script[type="application/ld+json"]');
     const results: any[] = [];
     scripts.each((_, el) => {
