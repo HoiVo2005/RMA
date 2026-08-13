@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import Parser from 'rss-parser';
-import fetch from 'node-fetch';
 import { createSupabaseAdmin } from '../lib/supabase';
 
 type SourceSpec = { url: string; name?: string; weight?: number };
