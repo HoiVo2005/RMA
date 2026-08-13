@@ -1597,7 +1597,7 @@ textarea {
   width: 100%;
   aspect-ratio: 3/4;
   object-fit: cover;
-  background: linear-gradient(160deg, var(--navy-800), var(--navy-950));
+  background: linear-gradient(160deg, #fff 0%, #e0f2fe 20%, #7dd3fc 55%, #2563eb 100%);
 }
 
 .player-photo-fallback {
@@ -3178,7 +3178,7 @@ select.filter-select {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 15%;
+  width: 20%;
   height: 15%;
   min-width: 60px;
   min-height: 60px;
