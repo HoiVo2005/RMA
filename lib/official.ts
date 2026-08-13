@@ -1,4 +1,4 @@
-import cheerio from 'cheerio';
+import { load, type CheerioAPI } from 'cheerio';
 
 type Payload = {
     external_id: string | null;
@@ -15,7 +15,7 @@ type Payload = {
     events?: any[];
 };
 
-function safeText(el: cheerio.Cheerio) {
+function safeText(el: ReturnType<CheerioAPI>) {
     return el && el.text ? el.text().trim() : '';
 }
 
@@ -29,7 +29,7 @@ export async function fetchFixtureFromOfficialUrl(url: string): Promise<Payload 
         const res = await fetch(url, { signal: AbortSignal.timeout(15000) });
         if (!res.ok) return null;
         const html = await res.text();
-        const $ = cheerio.load(html);
+        const $ = load(html);
 
         // Try <time datetime>
         let time = $('time[datetime]').first().attr('datetime') || null;
