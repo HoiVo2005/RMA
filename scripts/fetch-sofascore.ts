@@ -54,7 +54,7 @@ async function extractMatch(url: string): Promise<MatchData> {
     return out;
 }
 
-async function saveToSupabase(items: MatchData[]) {
+async function saveToSupabase(items: MatchData[]): Promise<any[] | null> {
     const supabase = createSupabaseAdmin();
     // expects a table `sofascore_matches` with at least columns: url (text, pk), source, payload (jsonb), fetched_at (timestamptz)
     const rows = items.map((it) => ({
