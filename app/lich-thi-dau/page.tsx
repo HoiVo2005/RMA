@@ -96,23 +96,36 @@ export default async function LichThiDauPage({
                   key={f.id}
                 >
                   <div className="fixture-main">
-                    <span className="comp-tag">{f.competition}</span>
-                    <div className="match-line-teams">
-                      <TeamBadge name={f.home_team} logo={f.home_logo_url} />
-                      <span className="match-line">
-                        {f.home_team} {f.home_score ?? ""} —{" "}
-                        {f.away_score ?? ""} {f.away_team}
+                    <div className="fixture-top">
+                      <span className="comp-tag">{f.competition}</span>
+                      <span className={`status-pill status-${f.status}`}>
+                        {statusLabel[f.status] || f.status}
                       </span>
-                      <TeamBadge name={f.away_team} logo={f.away_logo_url} />
+                    </div>
+                    <div className="match-line-teams">
+                      <div className="match-team">
+                        <TeamBadge name={f.home_team} logo={f.home_logo_url} />
+                        <span className="match-team-name">{f.home_team}</span>
+                      </div>
+                      <div className="match-score">
+                        <span className="match-score-num">
+                          {f.home_score ?? "-"}
+                        </span>
+                        <span className="match-score-sep">–</span>
+                        <span className="match-score-num">
+                          {f.away_score ?? "-"}
+                        </span>
+                      </div>
+                      <div className="match-team away">
+                        <TeamBadge name={f.away_team} logo={f.away_logo_url} />
+                        <span className="match-team-name">{f.away_team}</span>
+                      </div>
                     </div>
                     <div className="match-sub">
                       {new Date(f.match_time).toLocaleString("vi-VN")}
                       {f.stadium ? ` · ${f.stadium}` : ""}
                     </div>
                   </div>
-                  <span className={`status-pill status-${f.status}`}>
-                    {statusLabel[f.status] || f.status}
-                  </span>
                 </Link>
               ))
             ) : (

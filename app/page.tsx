@@ -171,28 +171,6 @@ export default async function Home() {
 
         <RecommendedArticles />
 
-        <div style={{ marginTop: 18 }} className="container">
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 12 }}>
-            <div>
-              <TransferCenter defaultTopic="Rodri" />
-            </div>
-            <div>
-              <TimelineCenter defaultTopic="Rodri" />
-            </div>
-          </div>
-        </div>
-
-        <nav className="quick-nav">
-          {quickNav.map((n) => {
-            const Icon = n.icon;
-            return (
-              <Link key={n.href} href={n.href} className="quick-nav-item">
-                <Icon size={16} /> {n.label}
-              </Link>
-            );
-          })}
-        </nav>
-
         <LineupSection lineup={lineup} />
       </div>
 

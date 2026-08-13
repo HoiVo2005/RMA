@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createSupabaseBrowser } from "@/lib/supabase";
+import { LogIn, LogOut, User, UserPlus } from "lucide-react";
 
 export function useUserSession() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
@@ -31,37 +32,78 @@ export function useUserSession() {
 
 export default function UserAuthButton() {
   const { userEmail, userName } = useUserSession();
+  const [open, setOpen] = useState(false);
+  const boxRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function onClickOutside(e: MouseEvent) {
+      if (boxRef.current && !boxRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    document.addEventListener("mousedown", onClickOutside);
+    return () => document.removeEventListener("mousedown", onClickOutside);
+  }, []);
 
   async function signOut() {
     await createSupabaseBrowser().auth.signOut();
+    setOpen(false);
   }
 
-  if (userEmail) {
-    return (
-      <div className="header-auth-group">
-        <span className="header-auth-badge">
-          Xin chào, {userName || userEmail.split("@")[0]}
-        </span>
-        <button
-          className="header-auth-button"
-          type="button"
-          onClick={signOut}
-          title="Đăng xuất"
-        >
-          Đăng xuất
-        </button>
-      </div>
-    );
-  }
+  const displayName = userName || (userEmail ? userEmail.split("@")[0] : "Tài khoản");
 
   return (
-    <div className="header-auth-group">
-      <Link className="header-auth-link" href="/login">
-        Đăng nhập
-      </Link>
-      <Link className="header-auth-button" href="/register">
-        Đăng ký
-      </Link>
+    <div className="user-auth-box" ref={boxRef}>
+      <button
+        type="button"
+        className="user-auth-avatar"
+        onClick={() => setOpen((o) => !o)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label={userEmail ? "Tài khoản" : "Đăng nhập / Đăng ký"}
+        title={userEmail ? "Tài khoản" : "Đăng nhập / Đăng ký"}
+      >
+        <User size={18} />
+        {userEmail && <span className="user-auth-dot" />}
+      </button>
+
+      {open && (
+        <div className="user-auth-menu" role="menu">
+          <div className="user-auth-menu-head">
+            <b>{userEmail ? displayName : "Tài khoản"}</b>
+            <span>
+              {userEmail
+                ? userEmail
+                : "Đăng nhập để lưu bài & theo dõi cầu thủ yêu thích"}
+            </span>
+          </div>
+
+          {userEmail ? (
+            <>
+              <button className="user-auth-menu-item is-danger" onClick={signOut} role="menuitem">
+                <LogOut size={16} /> Đăng xuất
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                className="user-auth-menu-item"
+                href="/login"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+              >
+                <LogIn size={16} /> Đăng nhập
+              </Link>
+              <Link
+                className="user-auth-menu-item"
+                href="/register"
+                role="menuitem"
+                onClick={() => setOpen(false)}
+              >
+                <UserPlus size={16} /> Đăng ký
+              </Link>
+            </>
+          )}
+        </div>
+      )}
     </div>
   );
 }

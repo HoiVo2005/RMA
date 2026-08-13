@@ -89,13 +89,6 @@ export default function RecommendedArticles() {
         </div>
       )}
 
-      {followed.length > 0 && articles.length > 0 && (
-        <div className="recommended-footer" style={{ marginTop: 18 }}>
-          <Link href="/danh-cho-ban" className="section-more">
-            Xem nhiều hơn trên Dành cho bạn
-          </Link>
-        </div>
-      )}
     </section>
   );
 }
