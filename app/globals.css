@@ -6484,6 +6484,12 @@ select.filter-select {
 
 /* ============ 2. HEADER THU GỌN + THANH ĐIỀU HƯỚNG ============ */
 @media (max-width: 720px) {
+  /* Trên mobile đã có thanh tab đáy nổi (.mobile-tabbar) để điều hướng nên ẩn
+     thanh menu ngang kiểu desktop (.site-nav) để khỏi trùng lặp/đè lên trên. */
+  .site-nav {
+    display: none;
+  }
+
   .site-header {
     padding: 8px 14px;
     gap: 9px;
